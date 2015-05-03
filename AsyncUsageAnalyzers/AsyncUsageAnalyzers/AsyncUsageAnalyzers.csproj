@@ -46,6 +46,8 @@
     <Compile Include="AnalyzerExtensions.cs" />
     <Compile Include="GeneratedCodeAnalysisExtensions.cs" />
     <Compile Include="Helpers\RenameHelper.cs" />
+    <Compile Include="Naming\AvoidAsyncSuffixAnalyzer.cs" />
+    <Compile Include="Naming\AvoidAsyncSuffixCodeFixProvider.cs" />
     <Compile Include="Naming\NamingResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

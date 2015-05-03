@@ -60,5 +60,32 @@ namespace AsyncUsageAnalyzers.Naming {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only methods which return a Task should include the suffix &apos;Async&apos;.
+        /// </summary>
+        internal static string AvoidAsyncSuffixDescription {
+            get {
+                return ResourceManager.GetString("AvoidAsyncSuffixDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Non-Task-returning method &apos;{0}&apos; should not end with &apos;Async&apos;.
+        /// </summary>
+        internal static string AvoidAsyncSuffixMessageFormat {
+            get {
+                return ResourceManager.GetString("AvoidAsyncSuffixMessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Avoid Async suffix.
+        /// </summary>
+        internal static string AvoidAsyncSuffixTitle {
+            get {
+                return ResourceManager.GetString("AvoidAsyncSuffixTitle", resourceCulture);
+            }
+        }
     }
 }

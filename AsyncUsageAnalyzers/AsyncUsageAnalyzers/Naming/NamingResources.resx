@@ -117,4 +117,13 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AvoidAsyncSuffixDescription" xml:space="preserve">
+    <value>Only methods which return a Task should include the suffix 'Async'</value>
+  </data>
+  <data name="AvoidAsyncSuffixMessageFormat" xml:space="preserve">
+    <value>Non-Task-returning method '{0}' should not end with 'Async'</value>
+  </data>
+  <data name="AvoidAsyncSuffixTitle" xml:space="preserve">
+    <value>Avoid Async suffix</value>
+  </data>
 </root>
