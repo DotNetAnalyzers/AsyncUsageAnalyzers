@@ -1,0 +1,32 @@
+﻿<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata minClientVersion="2.7">
+    <id>AsyncUsageAnalyzers</id>
+    <version>0.0.0</version>
+    <title>AsyncUsageAnalyzers</title>
+    <authors>Sam Harwell et. al.</authors>
+    <owners>Sam Harwell</owners>
+    <licenseUrl>https://raw.githubusercontent.com/DotNetAnalyzers/AsyncUsageAnalyzers/$version$/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/DotNetAnalyzers/AsyncUsageAnalyzers</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>A collection of analyzers related to best practices for writing asynchronous code.</description>
+    <releaseNotes>https://github.com/DotNetAnalyzers/AsyncUsageAnalyzers/releases/$version$</releaseNotes>
+    <copyright>Copyright Sam Harwell 2015</copyright>
+    <tags>Async DotNetAnalyzers Roslyn Diagnostic Analyzer</tags>
+    <developmentDependency>true</developmentDependency>
+  </metadata>
+  <files>
+
+    <!-- Binaries and symbols -->
+    <file src="bin\$Configuration$\AsyncUsageAnalyzers.dll" target="tools\analyzers\" />
+    <file src="bin\$Configuration$\AsyncUsageAnalyzers.pdb" target="tools\analyzers\" />
+
+    <!-- Scripts -->
+    <file src="tools\install.ps1" target="tools\" />
+    <file src="tools\uninstall.ps1" target="tools\" />
+
+    <!-- Source code -->
+    <file src="**\*.cs" exclude="obj\**\*.cs" target="src"/>
+
+  </files>
+</package>
