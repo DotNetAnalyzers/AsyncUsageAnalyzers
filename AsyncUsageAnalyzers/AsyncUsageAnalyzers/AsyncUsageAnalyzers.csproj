@@ -42,6 +42,7 @@
     <AssemblyOriginatorKeyFile Condition="'$(KeyConfiguration)' != 'Final'">..\..\build\keys\AsyncUsageAnalyzers.dev.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AnalyzerConstants.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
