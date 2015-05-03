@@ -32,6 +32,13 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile Condition="'$(KeyConfiguration)' == 'Final'">..\..\build\keys\AsyncUsageAnalyzers.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile Condition="'$(KeyConfiguration)' != 'Final'">..\..\build\keys\AsyncUsageAnalyzers.dev.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="CodeFixProvider.cs" />
     <Compile Include="DiagnosticAnalyzer.cs" />
@@ -49,6 +56,12 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\build\keys\AsyncUsageAnalyzers.dev.snk">
+      <Link>AsyncUsageAnalyzers.dev.snk</Link>
+    </None>
+    <None Include="..\..\build\keys\AsyncUsageAnalyzers.snk">
+      <Link>AsyncUsageAnalyzers.snk</Link>
+    </None>
     <NuGetManifest Include="AsyncUsageAnalyzers.nuspec">
       <SubType>Designer</SubType>
       <Symbols>True</Symbols>
