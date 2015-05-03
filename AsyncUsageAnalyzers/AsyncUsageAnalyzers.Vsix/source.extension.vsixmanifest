@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="AsyncUsageAnalyzers.Vsix..d724c172-86be-40a0-80e7-1c23b0fd7009" Version="1.0" Language="en-US" Publisher="sam"/>
-    <DisplayName>AsyncUsageAnalyzers.Vsix</DisplayName>
-    <Description xml:space="preserve">This is a sample diagnostic extension for the .NET Compiler Platform ("Roslyn").</Description>
+    <Identity Id="AsyncUsageAnalyzers.Tvl.d724c172-86be-40a0-80e7-1c23b0fd7009" Version="1.0" Language="en-US" Publisher="Sam Harwell et. al."/>
+    <DisplayName>Async Usage Analyzers</DisplayName>
+    <Description xml:space="preserve">A collection of analyzers for best practices for asynchronous code</Description>
   </Metadata>
   <Installation>
     <InstallationTarget Version="[14.0,]" Id="Microsoft.VisualStudio.Pro" />
