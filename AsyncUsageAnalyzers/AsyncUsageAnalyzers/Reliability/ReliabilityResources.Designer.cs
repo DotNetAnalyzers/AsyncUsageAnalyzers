@@ -60,5 +60,32 @@ namespace AsyncUsageAnalyzers.Reliability {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Asynchronous methods should return a Task instead of void.
+        /// </summary>
+        internal static string AvoidAsyncVoidDescription {
+            get {
+                return ResourceManager.GetString("AvoidAsyncVoidDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Asynchronous method &apos;{0}&apos; should not return void.
+        /// </summary>
+        internal static string AvoidAsyncVoidMessageFormat {
+            get {
+                return ResourceManager.GetString("AvoidAsyncVoidMessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Avoid async void.
+        /// </summary>
+        internal static string AvoidAsyncVoidTitle {
+            get {
+                return ResourceManager.GetString("AvoidAsyncVoidTitle", resourceCulture);
+            }
+        }
     }
 }
