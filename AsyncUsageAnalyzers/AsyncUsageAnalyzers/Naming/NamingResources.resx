@@ -126,4 +126,13 @@
   <data name="AvoidAsyncSuffixTitle" xml:space="preserve">
     <value>Avoid Async suffix</value>
   </data>
+  <data name="UseAsyncSuffixDescription" xml:space="preserve">
+    <value>Methods which return a Task should include the suffix 'Async'</value>
+  </data>
+  <data name="UseAsyncSuffixMessageFormat" xml:space="preserve">
+    <value>Task-returning method '{0}' should end with 'Async'</value>
+  </data>
+  <data name="UseAsyncSuffixTitle" xml:space="preserve">
+    <value>Use Async suffix</value>
+  </data>
 </root>
