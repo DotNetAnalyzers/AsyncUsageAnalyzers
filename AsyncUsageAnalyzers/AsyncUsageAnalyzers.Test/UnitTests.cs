@@ -1,29 +1,27 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 using TestHelper;
-using AsyncUsageAnalyzers;
+using Xunit;
 
 namespace AsyncUsageAnalyzers.Test
 {
-    [TestClass]
     public class UnitTest : CodeFixVerifier
     {
 
         //No diagnostics expected to show up
-        [TestMethod]
-        public void TestMethod1()
+        [Fact]
+        public async Task TestMethod1()
         {
             var test = @"";
 
-            VerifyCSharpDiagnostic(test);
+            await VerifyCSharpDiagnosticAsync(test, EmptyDiagnosticResults, CancellationToken.None);
         }
 
         //Diagnostic and CodeFix both triggered and checked for
-        [TestMethod]
-        public void TestMethod2()
+        [Fact]
+        public async Task TestMethod2()
         {
             var test = @"
     using System;
@@ -39,18 +37,9 @@ namespace AsyncUsageAnalyzers.Test
         {   
         }
     }";
-            var expected = new DiagnosticResult
-            {
-                Id = AsyncUsageAnalyzersAnalyzer.DiagnosticId,
-                Message = String.Format("Type name '{0}' contains lowercase letters", "TypeName"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations =
-                    new[] {
-                            new DiagnosticResultLocation("Test0.cs", 11, 15)
-                        }
-            };
+            DiagnosticResult expected = CSharpDiagnostic().WithArguments("TypeName").WithLocation(11, 15);
 
-            VerifyCSharpDiagnostic(test, expected);
+            await VerifyCSharpDiagnosticAsync(test, expected, CancellationToken.None);
 
             var fixtest = @"
     using System;
@@ -66,7 +55,7 @@ namespace AsyncUsageAnalyzers.Test
         {   
         }
     }";
-            VerifyCSharpFix(test, fixtest);
+            await VerifyCSharpFixAsync(test, fixtest, cancellationToken: CancellationToken.None);
         }
 
         protected override CodeFixProvider GetCSharpCodeFixProvider()
