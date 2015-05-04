@@ -41,11 +41,6 @@
                 }
 
                 var token = root.FindToken(diagnostic.Location.SourceSpan.Start);
-                if (token.IsMissing)
-                {
-                    continue;
-                }
-
                 var newName = token.ValueText + "Async";
                 context.RegisterCodeFix(CodeAction.Create($"Rename method to '{newName}'", cancellationToken => RenameHelper.RenameSymbolAsync(document, root, token, newName, cancellationToken)), diagnostic);
             }
