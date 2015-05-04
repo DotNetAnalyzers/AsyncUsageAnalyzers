@@ -60,5 +60,32 @@ namespace AsyncUsageAnalyzers.Usage {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The continuation behavior for a Task should be configured by calling ConfigureAwait prior to awaiting the task..
+        /// </summary>
+        internal static string UseConfigureAwaitDescription {
+            get {
+                return ResourceManager.GetString("UseConfigureAwaitDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Call ConfigureAwait before awaiting a Task.
+        /// </summary>
+        internal static string UseConfigureAwaitMessageFormat {
+            get {
+                return ResourceManager.GetString("UseConfigureAwaitMessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use ConfigureAwait.
+        /// </summary>
+        internal static string UseConfigureAwaitTitle {
+            get {
+                return ResourceManager.GetString("UseConfigureAwaitTitle", resourceCulture);
+            }
+        }
     }
 }
