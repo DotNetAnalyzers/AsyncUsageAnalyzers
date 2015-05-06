@@ -143,6 +143,19 @@ class ClassName
             await VerifyCSharpFixAsync(testCode, fixedCode, cancellationToken: CancellationToken.None).ConfigureAwait(false);
         }
 
+        [Fact]
+        public async Task TestPropertyGetterAndSetterTaskAsync()
+        {
+            string testCode = @"
+using System.Threading.Tasks;
+class ClassName
+{
+    public Task<string> TaskString { get; set; }
+}
+";
+            await VerifyCSharpDiagnosticAsync(testCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+        }
+
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
         {
             return new UseAsyncSuffixAnalyzer();
