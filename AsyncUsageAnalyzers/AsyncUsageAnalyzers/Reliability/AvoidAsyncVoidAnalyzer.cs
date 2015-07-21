@@ -2,6 +2,8 @@
 {
     using System.Collections.Immutable;
     using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CSharp;
+    using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Diagnostics;
 
     /// <summary>
@@ -32,6 +34,11 @@
         public override void Initialize(AnalysisContext context)
         {
             context.RegisterSymbolAction(HandleMethodDeclaration, SymbolKind.Method);
+            context.RegisterSyntaxNodeActionHonorExclusions(
+                HandleAnonymousFunctionExpression,
+                SyntaxKind.AnonymousMethodExpression,
+                SyntaxKind.ParenthesizedLambdaExpression,
+                SyntaxKind.SimpleLambdaExpression);
         }
 
         private void HandleMethodDeclaration(SymbolAnalysisContext context)
@@ -41,6 +48,26 @@
                 return;
 
             context.ReportDiagnostic(Diagnostic.Create(Descriptor, symbol.Locations[0], symbol.Name));
+        }
+
+        private static void HandleAnonymousFunctionExpression(SyntaxNodeAnalysisContext context)
+        {
+            AnonymousFunctionExpressionSyntax node = (AnonymousFunctionExpressionSyntax)context.Node;
+            if (node.AsyncKeyword.IsKind(SyntaxKind.None) || node.AsyncKeyword.IsMissing)
+                return;
+
+            TypeInfo typeInfo = context.SemanticModel.GetTypeInfo(node);
+            INamedTypeSymbol convertedType = typeInfo.ConvertedType as INamedTypeSymbol;
+            if (convertedType == null)
+                return;
+
+            if (convertedType.TypeKind != TypeKind.Delegate || convertedType.DelegateInvokeMethod == null)
+                return;
+
+            if (!convertedType.DelegateInvokeMethod.ReturnsVoid)
+                return;
+
+            context.ReportDiagnostic(Diagnostic.Create(Descriptor, node.AsyncKeyword.GetLocation(), "<anonymous>"));
         }
     }
 }
