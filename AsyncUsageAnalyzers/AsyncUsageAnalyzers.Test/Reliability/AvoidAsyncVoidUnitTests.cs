@@ -45,6 +45,58 @@ class ClassName
         }
 
         [Fact]
+        public async Task TestAsyncLambdaEventHandlerReturnVoidAsync()
+        {
+            string testCode = @"
+using System;
+class ClassName
+{
+    static event Action<object> SingleArgumentEvent;
+
+    ClassName()
+    {
+        AppDomain.CurrentDomain.DomainUnload += async (sender, e) => { };
+        AppDomain.CurrentDomain.DomainUnload += async delegate (object sender, EventArgs e) { };
+        SingleArgumentEvent += async arg => { };
+    }
+}
+";
+
+            // This analyzer does not currently handle this case differently from any other method
+            DiagnosticResult[] expected =
+            {
+                CSharpDiagnostic().WithArguments("<anonymous>").WithLocation(9, 49),
+                CSharpDiagnostic().WithArguments("<anonymous>").WithLocation(10, 49),
+                CSharpDiagnostic().WithArguments("<anonymous>").WithLocation(11, 32),
+            };
+            await VerifyCSharpDiagnosticAsync(testCode, expected, CancellationToken.None).ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task TestAsyncLambdaReturnTaskAsync()
+        {
+            string testCode = @"
+using System;
+using System.Threading.Tasks;
+class ClassName
+{
+    static Func<Task> ZeroArgumentFunction;
+    static Func<object, Task> SingleArgumentFunction;
+
+    ClassName()
+    {
+        ZeroArgumentFunction = async () => await Task.Delay(42);
+        SingleArgumentFunction = async arg => await Task.Delay(42);
+        SingleArgumentFunction = async (object arg) => await Task.Delay(42);
+        SingleArgumentFunction = async delegate (object arg) { await Task.Delay(42); };
+    }
+}
+";
+
+            await VerifyCSharpDiagnosticAsync(testCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+        }
+
+        [Fact]
         public async Task TestAsyncReturnTaskAsync()
         {
             string testCode = @"
