@@ -61,6 +61,9 @@
             if (symbol.MethodKind == MethodKind.PropertyGet || symbol.MethodKind == MethodKind.PropertySet)
                 return;
 
+            if (symbol.IsOverride)
+                return;
+
             context.ReportDiagnostic(Diagnostic.Create(Descriptor, symbol.Locations[0], symbol.Name));
         }
     }
