@@ -60,6 +60,9 @@
                 }
             }
 
+            if (symbol.IsOverride)
+                return;
+
             context.ReportDiagnostic(Diagnostic.Create(Descriptor, symbol.Locations[0], symbol.Name));
         }
     }
