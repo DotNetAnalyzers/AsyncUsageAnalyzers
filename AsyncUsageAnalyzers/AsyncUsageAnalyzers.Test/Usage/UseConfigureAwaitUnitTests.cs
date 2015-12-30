@@ -1,4 +1,7 @@
-﻿namespace AsyncUsageAnalyzers.Test.Usage
+﻿// Copyright (c) Tunnel Vision Laboratories, LLC. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
+namespace AsyncUsageAnalyzers.Test.Usage
 {
     using System.Collections.Generic;
     using System.Threading;
