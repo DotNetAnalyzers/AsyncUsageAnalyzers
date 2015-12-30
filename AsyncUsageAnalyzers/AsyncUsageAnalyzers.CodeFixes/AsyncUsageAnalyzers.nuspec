@@ -18,15 +18,18 @@
   <files>
 
     <!-- Binaries and symbols -->
-    <file src="bin\$Configuration$\AsyncUsageAnalyzers.dll" target="analyzers\dotnet\" />
-    <file src="bin\$Configuration$\AsyncUsageAnalyzers.pdb" target="analyzers\dotnet\" />
+    <file src="bin\$Configuration$\AsyncUsageAnalyzers.dll" target="analyzers\dotnet\cs" />
+    <file src="bin\$Configuration$\AsyncUsageAnalyzers.pdb" target="analyzers\dotnet\cs" />
+    <file src="bin\$Configuration$\AsyncUsageAnalyzers.CodeFixes.dll" target="analyzers\dotnet\cs" />
+    <file src="bin\$Configuration$\AsyncUsageAnalyzers.CodeFixes.pdb" target="analyzers\dotnet\cs" />
 
     <!-- Scripts -->
     <file src="tools\install.ps1" target="tools\" />
     <file src="tools\uninstall.ps1" target="tools\" />
 
     <!-- Source code -->
-    <file src="**\*.cs" exclude="obj\**\*.cs" target="src"/>
+    <file src="..\AsyncUsageAnalyzers\**\*.cs" exclude="..\AsyncUsageAnalyzers\obj\**\*.cs" target="src"/>
+    <file src="**\*.cs" exclude="obj\**\*.cs;Properties\AssemblyInfo.cs" target="src"/>
 
   </files>
 </package>

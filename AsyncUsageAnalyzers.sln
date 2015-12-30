@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.22823.1
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsyncUsageAnalyzers", "AsyncUsageAnalyzers\AsyncUsageAnalyzers\AsyncUsageAnalyzers.csproj", "{4E32037D-3EE0-419A-BC68-7D28FCD453A0}"
 EndProject
@@ -26,6 +26,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{11D3EB88
 		build\version.ps1 = build\version.ps1
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsyncUsageAnalyzers.CodeFixes", "AsyncUsageAnalyzers\AsyncUsageAnalyzers.CodeFixes\AsyncUsageAnalyzers.CodeFixes.csproj", "{BA0CD420-1E79-4FBC-B023-09C03BCDFFAC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,6 +46,10 @@ Global
 		{8ABF883C-450A-4D0E-8D50-BF8A07C82C1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8ABF883C-450A-4D0E-8D50-BF8A07C82C1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8ABF883C-450A-4D0E-8D50-BF8A07C82C1B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA0CD420-1E79-4FBC-B023-09C03BCDFFAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA0CD420-1E79-4FBC-B023-09C03BCDFFAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA0CD420-1E79-4FBC-B023-09C03BCDFFAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA0CD420-1E79-4FBC-B023-09C03BCDFFAC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
