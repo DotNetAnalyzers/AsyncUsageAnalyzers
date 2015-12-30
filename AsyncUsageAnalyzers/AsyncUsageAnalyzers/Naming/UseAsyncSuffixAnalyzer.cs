@@ -61,27 +61,41 @@ namespace AsyncUsageAnalyzers.Naming
             {
                 IMethodSymbol symbol = (IMethodSymbol)context.Symbol;
                 if (symbol.Name.EndsWith("Async", StringComparison.Ordinal))
+                {
                     return;
+                }
 
                 if (symbol.Locations.IsDefaultOrEmpty)
+                {
                     return;
+                }
 
                 Location location = symbol.Locations[0];
                 if (!location.IsInSource || location.SourceTree.IsGeneratedDocument(this.generatedHeaderCache, context.CancellationToken))
+                {
                     return;
+                }
 
                 // void-returning methods are not asynchronous according to their signature, even if they use `async`
                 if (symbol.ReturnsVoid)
+                {
                     return;
+                }
 
                 if (!string.Equals(nameof(Task), symbol.ReturnType?.Name, StringComparison.Ordinal))
+                {
                     return;
+                }
 
                 if (!string.Equals(typeof(Task).Namespace, symbol.ReturnType?.ContainingNamespace?.ToString(), StringComparison.Ordinal))
+                {
                     return;
+                }
 
                 if (symbol.MethodKind == MethodKind.PropertyGet || symbol.MethodKind == MethodKind.PropertySet)
+                {
                     return;
+                }
 
                 context.ReportDiagnostic(Diagnostic.Create(Descriptor, symbol.Locations[0], symbol.Name));
             }

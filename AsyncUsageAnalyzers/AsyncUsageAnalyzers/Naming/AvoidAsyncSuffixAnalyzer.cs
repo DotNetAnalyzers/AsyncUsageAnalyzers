@@ -61,17 +61,25 @@ namespace AsyncUsageAnalyzers.Naming
             {
                 IMethodSymbol symbol = (IMethodSymbol)context.Symbol;
                 if (symbol.IsAsync)
+                {
                     return;
+                }
 
                 if (!symbol.Name.EndsWith("Async", StringComparison.Ordinal))
+                {
                     return;
+                }
 
                 if (symbol.Locations.IsDefaultOrEmpty)
+                {
                     return;
+                }
 
                 Location location = symbol.Locations[0];
                 if (!location.IsInSource || location.SourceTree.IsGeneratedDocument(this.generatedHeaderCache, context.CancellationToken))
+                {
                     return;
+                }
 
                 if (!symbol.ReturnsVoid)
                 {

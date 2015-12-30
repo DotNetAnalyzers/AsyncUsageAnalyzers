@@ -62,18 +62,26 @@ namespace AsyncUsageAnalyzers.Reliability
         {
             AnonymousFunctionExpressionSyntax node = (AnonymousFunctionExpressionSyntax)context.Node;
             if (node.AsyncKeyword.IsKind(SyntaxKind.None) || node.AsyncKeyword.IsMissing)
+            {
                 return;
+            }
 
             TypeInfo typeInfo = context.SemanticModel.GetTypeInfo(node);
             INamedTypeSymbol convertedType = typeInfo.ConvertedType as INamedTypeSymbol;
             if (convertedType == null)
+            {
                 return;
+            }
 
             if (convertedType.TypeKind != TypeKind.Delegate || convertedType.DelegateInvokeMethod == null)
+            {
                 return;
+            }
 
             if (!convertedType.DelegateInvokeMethod.ReturnsVoid)
+            {
                 return;
+            }
 
             context.ReportDiagnostic(Diagnostic.Create(Descriptor, node.AsyncKeyword.GetLocation(), "<anonymous>"));
         }
@@ -91,11 +99,15 @@ namespace AsyncUsageAnalyzers.Reliability
             {
                 IMethodSymbol symbol = (IMethodSymbol)context.Symbol;
                 if (!symbol.IsAsync || !symbol.ReturnsVoid)
+                {
                     return;
+                }
 
                 Location location = symbol.Locations[0];
                 if (!location.IsInSource || location.SourceTree.IsGeneratedDocument(this.generatedHeaderCache, context.CancellationToken))
+                {
                     return;
+                }
 
                 context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, symbol.Name));
             }

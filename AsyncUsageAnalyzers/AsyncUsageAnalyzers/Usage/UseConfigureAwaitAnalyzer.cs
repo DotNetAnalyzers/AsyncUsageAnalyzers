@@ -55,7 +55,9 @@ namespace AsyncUsageAnalyzers.Usage
             AwaitExpressionSyntax syntax = (AwaitExpressionSyntax)context.Node;
             ExpressionSyntax expression = syntax.Expression;
             if (!IsTask(expression, context.SemanticModel))
+            {
                 return;
+            }
 
             context.ReportDiagnostic(Diagnostic.Create(Descriptor, expression.GetLocation()));
         }
@@ -64,7 +66,9 @@ namespace AsyncUsageAnalyzers.Usage
         {
             var type = semanticModel.GetTypeInfo(expression).Type as INamedTypeSymbol;
             if (type == null)
+            {
                 return false;
+            }
 
             INamedTypeSymbol taskType;
             if (type.IsGenericType)
