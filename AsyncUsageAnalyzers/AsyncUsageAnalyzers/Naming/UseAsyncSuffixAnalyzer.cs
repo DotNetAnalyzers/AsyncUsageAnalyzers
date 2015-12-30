@@ -1,6 +1,7 @@
 ﻿namespace AsyncUsageAnalyzers.Naming
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Immutable;
     using System.Threading.Tasks;
     using Microsoft.CodeAnalysis;
@@ -11,7 +12,7 @@
     /// signature, and reports a warning if the method name does not include the suffix <c>Async</c>.
     /// </summary>
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class UseAsyncSuffixAnalyzer : DiagnosticAnalyzer
+    internal class UseAsyncSuffixAnalyzer : DiagnosticAnalyzer
     {
         /// <summary>
         /// The ID for diagnostics produced by the <see cref="UseAsyncSuffixAnalyzer"/> analyzer.
@@ -24,44 +25,63 @@
         private static readonly string HelpLink = "https://github.com/DotNetAnalyzers/AsyncUsageAnalyzers";
 
         private static readonly DiagnosticDescriptor Descriptor =
-            new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, true, Description, HelpLink);
+            new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, AnalyzerConstants.EnabledByDefault, Description, HelpLink);
+
+        private static readonly Action<CompilationStartAnalysisContext> CompilationStartAction = HandleCompilationStart;
 
         /// <inheritdoc/>
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = ImmutableArray.Create(Descriptor);
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } =
+            ImmutableArray.Create(Descriptor);
 
         /// <inheritdoc/>
         public override void Initialize(AnalysisContext context)
         {
-            context.RegisterSymbolAction(HandleMethodDeclaration, SymbolKind.Method);
+            context.RegisterCompilationStartAction(CompilationStartAction);
         }
 
-        private void HandleMethodDeclaration(SymbolAnalysisContext context)
+        private static void HandleCompilationStart(CompilationStartAnalysisContext context)
         {
-            IMethodSymbol symbol = (IMethodSymbol)context.Symbol;
-            if (symbol.Name.EndsWith("Async", StringComparison.Ordinal))
-                return;
+            Analyzer analyzer = new Analyzer(context.Compilation.GetOrCreateGeneratedDocumentCache());
+            context.RegisterSymbolAction(analyzer.HandleMethodDeclaration, SymbolKind.Method);
+        }
 
-            if (symbol.Locations.IsDefaultOrEmpty)
-                return;
+        private sealed class Analyzer
+        {
+            private readonly ConcurrentDictionary<SyntaxTree, bool> generatedHeaderCache;
 
-            Location location = symbol.Locations[0];
-            if (!location.IsInSource || location.SourceTree.IsGeneratedDocument(context.CancellationToken))
-                return;
+            public Analyzer(ConcurrentDictionary<SyntaxTree, bool> generatedHeaderCache)
+            {
+                this.generatedHeaderCache = generatedHeaderCache;
+            }
 
-            // void-returning methods are not asynchronous according to their signature, even if they use `async`
-            if (symbol.ReturnsVoid)
-                return;
+            public void HandleMethodDeclaration(SymbolAnalysisContext context)
+            {
+                IMethodSymbol symbol = (IMethodSymbol)context.Symbol;
+                if (symbol.Name.EndsWith("Async", StringComparison.Ordinal))
+                    return;
 
-            if (!string.Equals(nameof(Task), symbol.ReturnType?.Name, StringComparison.Ordinal))
-                return;
+                if (symbol.Locations.IsDefaultOrEmpty)
+                    return;
 
-            if (!string.Equals(typeof(Task).Namespace, symbol.ReturnType?.ContainingNamespace?.ToString(), StringComparison.Ordinal))
-                return;
+                Location location = symbol.Locations[0];
+                if (!location.IsInSource || location.SourceTree.IsGeneratedDocument(this.generatedHeaderCache, context.CancellationToken))
+                    return;
 
-            if (symbol.MethodKind == MethodKind.PropertyGet || symbol.MethodKind == MethodKind.PropertySet)
-                return;
+                // void-returning methods are not asynchronous according to their signature, even if they use `async`
+                if (symbol.ReturnsVoid)
+                    return;
 
-            context.ReportDiagnostic(Diagnostic.Create(Descriptor, symbol.Locations[0], symbol.Name));
+                if (!string.Equals(nameof(Task), symbol.ReturnType?.Name, StringComparison.Ordinal))
+                    return;
+
+                if (!string.Equals(typeof(Task).Namespace, symbol.ReturnType?.ContainingNamespace?.ToString(), StringComparison.Ordinal))
+                    return;
+
+                if (symbol.MethodKind == MethodKind.PropertyGet || symbol.MethodKind == MethodKind.PropertySet)
+                    return;
+
+                context.ReportDiagnostic(Diagnostic.Create(Descriptor, symbol.Locations[0], symbol.Name));
+            }
         }
     }
 }

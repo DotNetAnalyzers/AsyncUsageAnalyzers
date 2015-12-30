@@ -16,7 +16,7 @@
     /// </summary>
     [ExportCodeFixProvider(LanguageNames.CSharp, LanguageNames.VisualBasic, Name = nameof(UseConfigureAwaitCodeFixProvider))]
     [Shared]
-    public class UseConfigureAwaitCodeFixProvider : CodeFixProvider
+    internal class UseConfigureAwaitCodeFixProvider : CodeFixProvider
     {
         private static readonly ImmutableArray<string> FixableDiagnostics =
             ImmutableArray.Create(UseConfigureAwaitAnalyzer.DiagnosticId);

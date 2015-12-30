@@ -1,6 +1,7 @@
 ﻿namespace AsyncUsageAnalyzers.Naming
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Immutable;
     using System.Threading.Tasks;
     using Microsoft.CodeAnalysis;
@@ -11,7 +12,7 @@
     /// (TAP) by their signature, and reports a warning if the method name includes the suffix <c>Async</c>.
     /// </summary>
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class AvoidAsyncSuffixAnalyzer : DiagnosticAnalyzer
+    internal class AvoidAsyncSuffixAnalyzer : DiagnosticAnalyzer
     {
         /// <summary>
         /// The ID for diagnostics produced by the <see cref="AvoidAsyncSuffixAnalyzer"/> analyzer.
@@ -24,43 +25,62 @@
         private static readonly string HelpLink = "https://github.com/DotNetAnalyzers/AsyncUsageAnalyzers";
 
         private static readonly DiagnosticDescriptor Descriptor =
-            new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, true, Description, HelpLink);
+            new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, AnalyzerConstants.EnabledByDefault, Description, HelpLink);
+
+        private static readonly Action<CompilationStartAnalysisContext> CompilationStartAction = HandleCompilationStart;
 
         /// <inheritdoc/>
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = ImmutableArray.Create(Descriptor);
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } =
+            ImmutableArray.Create(Descriptor);
 
         /// <inheritdoc/>
         public override void Initialize(AnalysisContext context)
         {
-            context.RegisterSymbolAction(HandleMethodDeclaration, SymbolKind.Method);
+            context.RegisterCompilationStartAction(CompilationStartAction);
         }
 
-        private void HandleMethodDeclaration(SymbolAnalysisContext context)
+        private static void HandleCompilationStart(CompilationStartAnalysisContext context)
         {
-            IMethodSymbol symbol = (IMethodSymbol)context.Symbol;
-            if (symbol.IsAsync)
-                return;
+            Analyzer analyzer = new Analyzer(context.Compilation.GetOrCreateGeneratedDocumentCache());
+            context.RegisterSymbolAction(analyzer.HandleMethodDeclaration, SymbolKind.Method);
+        }
 
-            if (!symbol.Name.EndsWith("Async", StringComparison.Ordinal))
-                return;
+        private sealed class Analyzer
+        {
+            private readonly ConcurrentDictionary<SyntaxTree, bool> generatedHeaderCache;
 
-            if (symbol.Locations.IsDefaultOrEmpty)
-                return;
-
-            Location location = symbol.Locations[0];
-            if (!location.IsInSource || location.SourceTree.IsGeneratedDocument(context.CancellationToken))
-                return;
-
-            if (!symbol.ReturnsVoid)
+            public Analyzer(ConcurrentDictionary<SyntaxTree, bool> generatedHeaderCache)
             {
-                if (string.Equals(nameof(Task), symbol.ReturnType?.Name, StringComparison.Ordinal)
-                    && string.Equals(typeof(Task).Namespace, symbol.ReturnType?.ContainingNamespace?.ToString(), StringComparison.Ordinal))
-                {
-                    return;
-                }
+                this.generatedHeaderCache = generatedHeaderCache;
             }
 
-            context.ReportDiagnostic(Diagnostic.Create(Descriptor, symbol.Locations[0], symbol.Name));
+            public void HandleMethodDeclaration(SymbolAnalysisContext context)
+            {
+                IMethodSymbol symbol = (IMethodSymbol)context.Symbol;
+                if (symbol.IsAsync)
+                    return;
+
+                if (!symbol.Name.EndsWith("Async", StringComparison.Ordinal))
+                    return;
+
+                if (symbol.Locations.IsDefaultOrEmpty)
+                    return;
+
+                Location location = symbol.Locations[0];
+                if (!location.IsInSource || location.SourceTree.IsGeneratedDocument(this.generatedHeaderCache, context.CancellationToken))
+                    return;
+
+                if (!symbol.ReturnsVoid)
+                {
+                    if (string.Equals(nameof(Task), symbol.ReturnType?.Name, StringComparison.Ordinal)
+                        && string.Equals(typeof(Task).Namespace, symbol.ReturnType?.ContainingNamespace?.ToString(), StringComparison.Ordinal))
+                    {
+                        return;
+                    }
+                }
+
+                context.ReportDiagnostic(Diagnostic.Create(Descriptor, symbol.Locations[0], symbol.Name));
+            }
         }
     }
 }

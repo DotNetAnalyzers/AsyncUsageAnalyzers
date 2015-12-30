@@ -46,7 +46,9 @@
   <ItemGroup>
     <Compile Include="AnalyzerConstants.cs" />
     <Compile Include="AnalyzerExtensions.cs" />
+    <Compile Include="ExcludeFromCodeCoverageAttribute.cs" />
     <Compile Include="GeneratedCodeAnalysisExtensions.cs" />
+    <Compile Include="Helpers\TriviaHelper.cs" />
     <Compile Include="Naming\AvoidAsyncSuffixAnalyzer.cs" />
     <Compile Include="Naming\NamingResources.Designer.cs">
       <AutoGen>True</AutoGen>

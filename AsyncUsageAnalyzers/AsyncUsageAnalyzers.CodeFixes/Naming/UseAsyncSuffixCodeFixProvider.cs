@@ -13,7 +13,7 @@
     /// </summary>
     [ExportCodeFixProvider(LanguageNames.CSharp, LanguageNames.VisualBasic, Name = nameof(UseAsyncSuffixCodeFixProvider))]
     [Shared]
-    public class UseAsyncSuffixCodeFixProvider : CodeFixProvider
+    internal class UseAsyncSuffixCodeFixProvider : CodeFixProvider
     {
         private static readonly ImmutableArray<string> FixableDiagnostics =
             ImmutableArray.Create(UseAsyncSuffixAnalyzer.DiagnosticId);
