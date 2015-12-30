@@ -48,6 +48,12 @@
     <Compile Include="AnalyzerExtensions.cs" />
     <Compile Include="ExcludeFromCodeCoverageAttribute.cs" />
     <Compile Include="GeneratedCodeAnalysisExtensions.cs" />
+    <Compile Include="Helpers\HelpersResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>HelpersResources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Helpers\SpecializedTasks.cs" />
     <Compile Include="Helpers\TriviaHelper.cs" />
     <Compile Include="Naming\AvoidAsyncSuffixAnalyzer.cs" />
     <Compile Include="Naming\NamingResources.Designer.cs">
@@ -77,6 +83,10 @@
     <Compile Include="Usage\UseConfigureAwaitAnalyzer.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Helpers\HelpersResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>HelpersResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Naming\NamingResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>NamingResources.Designer.cs</LastGenOutput>

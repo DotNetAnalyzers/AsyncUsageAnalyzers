@@ -42,6 +42,9 @@
     <AssemblyOriginatorKeyFile Condition="'$(KeyConfiguration)' != 'Final'">..\..\build\keys\AsyncUsageAnalyzers.dev.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Helpers\CustomBatchFixAllProvider.cs" />
+    <Compile Include="Helpers\CustomFixAllProviders.cs" />
+    <Compile Include="Helpers\FixAllContextHelper.cs" />
     <Compile Include="Helpers\RenameHelper.cs" />
     <Compile Include="Naming\AvoidAsyncSuffixCodeFixProvider.cs" />
     <Compile Include="Naming\UseAsyncSuffixCodeFixProvider.cs" />
