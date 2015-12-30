@@ -28,6 +28,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{11D3EB88
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsyncUsageAnalyzers.CodeFixes", "AsyncUsageAnalyzers\AsyncUsageAnalyzers.CodeFixes\AsyncUsageAnalyzers.CodeFixes.csproj", "{BA0CD420-1E79-4FBC-B023-09C03BCDFFAC}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "documentation", "documentation", "{9E388950-B857-4C92-9429-676FE26BF115}"
+	ProjectSection(SolutionItems) = preProject
+		documentation\AvoidAsyncSuffix.md = documentation\AvoidAsyncSuffix.md
+		documentation\AvoidAsyncVoid.md = documentation\AvoidAsyncVoid.md
+		documentation\UseAsyncSuffix.md = documentation\UseAsyncSuffix.md
+		documentation\UseConfigureAwait.md = documentation\UseConfigureAwait.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

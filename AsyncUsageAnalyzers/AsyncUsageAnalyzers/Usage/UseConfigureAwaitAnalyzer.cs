@@ -24,7 +24,7 @@
         private static readonly LocalizableString MessageFormat = new LocalizableResourceString(nameof(UsageResources.UseConfigureAwaitMessageFormat), UsageResources.ResourceManager, typeof(UsageResources));
         private static readonly string Category = "AsyncUsage.CSharp.Usage";
         private static readonly LocalizableString Description = new LocalizableResourceString(nameof(UsageResources.UseConfigureAwaitDescription), UsageResources.ResourceManager, typeof(UsageResources));
-        private static readonly string HelpLink = "https://github.com/DotNetAnalyzers/AsyncUsageAnalyzers";
+        private static readonly string HelpLink = "https://github.com/DotNetAnalyzers/AsyncUsageAnalyzers/blob/master/documentation/UseConfigureAwait.md";
 
         private static readonly DiagnosticDescriptor Descriptor =
             new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Hidden, AnalyzerConstants.EnabledByDefault, Description, HelpLink);

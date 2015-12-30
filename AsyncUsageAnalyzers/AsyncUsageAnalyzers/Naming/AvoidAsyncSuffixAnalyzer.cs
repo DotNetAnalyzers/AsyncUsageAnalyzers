@@ -22,7 +22,7 @@
         private static readonly LocalizableString MessageFormat = new LocalizableResourceString(nameof(NamingResources.AvoidAsyncSuffixMessageFormat), NamingResources.ResourceManager, typeof(NamingResources));
         private static readonly string Category = "AsyncUsage.CSharp.Naming";
         private static readonly LocalizableString Description = new LocalizableResourceString(nameof(NamingResources.AvoidAsyncSuffixDescription), NamingResources.ResourceManager, typeof(NamingResources));
-        private static readonly string HelpLink = "https://github.com/DotNetAnalyzers/AsyncUsageAnalyzers";
+        private static readonly string HelpLink = "https://github.com/DotNetAnalyzers/AsyncUsageAnalyzers/blob/master/documentation/AvoidAsyncSuffix.md";
 
         private static readonly DiagnosticDescriptor Descriptor =
             new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, AnalyzerConstants.EnabledByDefault, Description, HelpLink);
