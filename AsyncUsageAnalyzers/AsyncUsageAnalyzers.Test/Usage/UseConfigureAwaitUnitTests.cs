@@ -15,7 +15,7 @@ namespace AsyncUsageAnalyzers.Test.Usage
     public class UseConfigureAwaitUnitTests : CodeFixVerifier
     {
         [Fact]
-        public async Task TestSimpleExpression()
+        public async Task TestSimpleExpressionAsync()
         {
             string testCode = @"
 using System.Threading.Tasks;
@@ -45,7 +45,7 @@ class ClassName
         }
 
         [Fact]
-        public async Task TestNestedExpressions()
+        public async Task TestNestedExpressionsAsync()
         {
             string testCode = @"
 using System.Threading.Tasks;
