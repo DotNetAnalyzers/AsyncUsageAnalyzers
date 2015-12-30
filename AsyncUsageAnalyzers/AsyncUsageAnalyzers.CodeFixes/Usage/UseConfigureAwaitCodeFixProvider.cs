@@ -55,7 +55,7 @@ namespace AsyncUsageAnalyzers.Usage
             return Task.FromResult(true);
         }
 
-        private async Task<Document> GetTransformedDocumentAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
+        private static async Task<Document> GetTransformedDocumentAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
             SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             ExpressionSyntax expression = (ExpressionSyntax)root.FindNode(diagnostic.Location.SourceSpan);
