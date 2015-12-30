@@ -40,7 +40,12 @@
                     continue;
                 }
 
-                context.RegisterCodeFix(CodeAction.Create("Use ConfigureAwait(false)", cancellationToken => GetTransformedDocumentAsync(context.Document, diagnostic, cancellationToken)), diagnostic);
+                context.RegisterCodeFix(
+                    CodeAction.Create(
+                        "Use ConfigureAwait(false)",
+                        cancellationToken => GetTransformedDocumentAsync(context.Document, diagnostic, cancellationToken),
+                        nameof(UseConfigureAwaitCodeFixProvider) + "_False"),
+                    diagnostic);
             }
 
             return Task.FromResult(true);

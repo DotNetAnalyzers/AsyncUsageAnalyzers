@@ -42,7 +42,12 @@
 
                 var token = root.FindToken(diagnostic.Location.SourceSpan.Start);
                 var newName = token.ValueText.Substring(0, token.ValueText.Length - "Async".Length);
-                context.RegisterCodeFix(CodeAction.Create($"Rename method to '{newName}'", cancellationToken => RenameHelper.RenameSymbolAsync(document, root, token, newName, cancellationToken)), diagnostic);
+                context.RegisterCodeFix(
+                    CodeAction.Create(
+                        $"Rename method to '{newName}'",
+                        cancellationToken => RenameHelper.RenameSymbolAsync(document, root, token, newName, cancellationToken),
+                        nameof(AvoidAsyncSuffixCodeFixProvider)),
+                    diagnostic);
             }
         }
     }
