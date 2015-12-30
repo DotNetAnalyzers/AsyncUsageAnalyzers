@@ -117,6 +117,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\DiagnosticResultLocation.cs" />
+    <Compile Include="Helpers\MetadataReferences.cs" />
+    <Compile Include="Helpers\TestDiagnosticProvider.cs" />
     <Compile Include="Naming\AvoidAsyncSuffixUnitTests.cs" />
     <Compile Include="Naming\UseAsyncSuffixUnitTests.cs" />
     <Compile Include="Reliability\AvoidAsyncVoidUnitTests.cs" />

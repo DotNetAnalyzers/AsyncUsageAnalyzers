@@ -1,5 +1,6 @@
 ﻿namespace AsyncUsageAnalyzers.Test.Reliability
 {
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using AsyncUsageAnalyzers.Reliability;
@@ -152,9 +153,9 @@ class ClassName
             await VerifyCSharpDiagnosticAsync(testCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
         }
 
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+        protected override IEnumerable<DiagnosticAnalyzer> GetCSharpDiagnosticAnalyzers()
         {
-            return new AvoidAsyncVoidAnalyzer();
+            yield return new AvoidAsyncVoidAnalyzer();
         }
     }
 }

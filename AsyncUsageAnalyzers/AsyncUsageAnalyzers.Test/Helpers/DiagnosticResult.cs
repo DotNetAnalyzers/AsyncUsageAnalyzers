@@ -1,34 +1,10 @@
-﻿using Microsoft.CodeAnalysis;
-using System;
+﻿// Copyright (c) Tunnel Vision Laboratories, LLC. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 namespace TestHelper
 {
-    /// <summary>
-    /// Location where the diagnostic appears, as determined by path, line number, and column number.
-    /// </summary>
-    public struct DiagnosticResultLocation
-    {
-        public string Path;
-        public int Line;
-        public int Column;
-
-        public DiagnosticResultLocation(string path, int line, int column)
-        {
-            if (line < 0 && column < 0)
-            {
-                throw new ArgumentOutOfRangeException("At least one of line and column must be > 0");
-            }
-
-            if (line < -1 || column < -1)
-            {
-                throw new ArgumentOutOfRangeException("Both line and column must be >= -1");
-            }
-
-            this.Path = path;
-            this.Line = line;
-            this.Column = column;
-        }
-    }
+    using System;
+    using Microsoft.CodeAnalysis;
 
     /// <summary>
     /// Structure that stores information about a <see cref="Diagnostic"/> appearing in a source.
@@ -142,6 +118,13 @@ namespace TestHelper
             return result;
         }
 
+        public DiagnosticResult WithMessageFormat(LocalizableString messageFormat)
+        {
+            DiagnosticResult result = this;
+            result.MessageFormat = messageFormat;
+            return result;
+        }
+
         public DiagnosticResult WithLocation(int line, int column)
         {
             return this.WithLocation("Test0.cs", line, column);
@@ -152,6 +135,18 @@ namespace TestHelper
             DiagnosticResult result = this;
             Array.Resize(ref result.locations, (result.locations?.Length ?? 0) + 1);
             result.locations[result.locations.Length - 1] = new DiagnosticResultLocation(path, line, column);
+            return result;
+        }
+
+        public DiagnosticResult WithLineOffset(int offset)
+        {
+            DiagnosticResult result = this;
+            Array.Resize(ref result.locations, result.locations?.Length ?? 0);
+            for (int i = 0; i < result.locations.Length; i++)
+            {
+                result.locations[i].Line += offset;
+            }
+
             return result;
         }
     }

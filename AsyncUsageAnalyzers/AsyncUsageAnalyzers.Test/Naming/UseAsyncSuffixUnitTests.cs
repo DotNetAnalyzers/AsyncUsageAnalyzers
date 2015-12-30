@@ -1,5 +1,6 @@
 ﻿namespace AsyncUsageAnalyzers.Test.Naming
 {
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using AsyncUsageAnalyzers.Naming;
@@ -156,9 +157,9 @@ class ClassName
             await VerifyCSharpDiagnosticAsync(testCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
         }
 
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+        protected override IEnumerable<DiagnosticAnalyzer> GetCSharpDiagnosticAnalyzers()
         {
-            return new UseAsyncSuffixAnalyzer();
+            yield return new UseAsyncSuffixAnalyzer();
         }
 
         protected override CodeFixProvider GetCSharpCodeFixProvider()

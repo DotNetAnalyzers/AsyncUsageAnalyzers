@@ -1,5 +1,6 @@
 ﻿namespace AsyncUsageAnalyzers.Test.Usage
 {
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using AsyncUsageAnalyzers.Usage;
@@ -84,9 +85,9 @@ class ClassName
             await VerifyCSharpFixAsync(testCode, fixedCode, cancellationToken: CancellationToken.None).ConfigureAwait(false);
         }
 
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+        protected override IEnumerable<DiagnosticAnalyzer> GetCSharpDiagnosticAnalyzers()
         {
-            return new UseConfigureAwaitAnalyzer();
+            yield return new UseConfigureAwaitAnalyzer();
         }
 
         protected override CodeFixProvider GetCSharpCodeFixProvider()
