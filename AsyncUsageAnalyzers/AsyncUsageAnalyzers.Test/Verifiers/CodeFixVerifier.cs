@@ -10,12 +10,12 @@ namespace TestHelper
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using AsyncUsageAnalyzers.Test.Helpers;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CodeActions;
     using Microsoft.CodeAnalysis.CodeFixes;
     using Microsoft.CodeAnalysis.Diagnostics;
     using Microsoft.CodeAnalysis.Formatting;
-    using AsyncUsageAnalyzers.Test.Helpers;
     using Xunit;
 
     /// <summary>

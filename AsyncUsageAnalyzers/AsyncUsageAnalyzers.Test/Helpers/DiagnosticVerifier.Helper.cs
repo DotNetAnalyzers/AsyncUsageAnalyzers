@@ -9,11 +9,11 @@ namespace TestHelper
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using AsyncUsageAnalyzers.Test.Helpers;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.Diagnostics;
     using Microsoft.CodeAnalysis.Text;
-    using AsyncUsageAnalyzers.Test.Helpers;
 
     /// <summary>
     /// Class for turning strings into documents and getting the diagnostics on them.
