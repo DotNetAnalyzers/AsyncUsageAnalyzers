@@ -45,6 +45,23 @@ class ClassName
         }
 
         [Fact]
+        public async Task TestDynamicExpressionAsync()
+        {
+            string testCode = @"
+using System.Threading.Tasks;
+class ClassName
+{
+    async Task MethodNameAsync()
+    {
+        await (dynamic)Task.Delay(1000);
+    }
+}
+";
+
+            await this.VerifyCSharpDiagnosticAsync(testCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+        }
+
+        [Fact]
         public async Task TestNestedExpressionsAsync()
         {
             string testCode = @"
