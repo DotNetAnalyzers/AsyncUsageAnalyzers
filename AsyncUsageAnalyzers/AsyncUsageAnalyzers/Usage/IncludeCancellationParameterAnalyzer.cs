@@ -78,6 +78,38 @@ namespace AsyncUsageAnalyzers.Usage
                     return;
                 }
 
+                switch (symbol.MethodKind)
+                {
+                case MethodKind.LambdaMethod:
+                case MethodKind.Constructor:
+                case MethodKind.Conversion:
+                case MethodKind.UserDefinedOperator:
+                case MethodKind.PropertyGet:
+                case MethodKind.PropertySet:
+                case MethodKind.StaticConstructor:
+                case MethodKind.BuiltinOperator:
+                case MethodKind.Destructor:
+                case MethodKind.EventAdd:
+                case MethodKind.EventRaise:
+                case MethodKind.EventRemove:
+                    // These can't be async
+                    return;
+
+                case MethodKind.DelegateInvoke:
+                    // Not sure if this is reachable
+                    return;
+
+                case MethodKind.ExplicitInterfaceImplementation:
+                    // These are ignored
+                    return;
+
+                case MethodKind.ReducedExtension:
+                case MethodKind.Ordinary:
+                case MethodKind.DeclareMethod:
+                default:
+                    break;
+                }
+
                 if (!symbol.IsInAnalyzedSource(this.generatedHeaderCache, context.CancellationToken))
                 {
                     return;

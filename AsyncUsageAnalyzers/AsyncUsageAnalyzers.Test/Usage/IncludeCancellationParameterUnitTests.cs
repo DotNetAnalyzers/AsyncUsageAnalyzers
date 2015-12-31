@@ -39,7 +39,7 @@ namespace AsyncUsageAnalyzers.Test.Usage
 using System.Threading.Tasks;
 class ClassName
 {
-    Task PropertyName { get; set; }
+    public Task PropertyName { get; set; }
 }
 ";
 
