@@ -126,6 +126,7 @@
     <Compile Include="Naming\AvoidAsyncSuffixUnitTests.cs" />
     <Compile Include="Naming\UseAsyncSuffixUnitTests.cs" />
     <Compile Include="Reliability\AvoidAsyncVoidUnitTests.cs" />
+    <Compile Include="Usage\IncludeCancellationParameterUnitTests.cs" />
     <Compile Include="Usage\UseConfigureAwaitUnitTests.cs" />
     <Compile Include="Verifiers\CodeFixVerifier.cs" />
     <Compile Include="Verifiers\DiagnosticVerifier.cs" />

@@ -55,7 +55,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>HelpersResources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\MethodSymbolExtensions.cs" />
     <Compile Include="Helpers\SpecializedTasks.cs" />
+    <Compile Include="Helpers\SymbolExtensions.cs" />
     <Compile Include="Helpers\TriviaHelper.cs" />
     <Compile Include="Naming\AvoidAsyncSuffixAnalyzer.cs" />
     <Compile Include="Naming\NamingResources.Designer.cs">
@@ -77,6 +79,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Usage\IncludeCancellationParameterAnalyzer.cs" />
     <Compile Include="Usage\UsageResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
