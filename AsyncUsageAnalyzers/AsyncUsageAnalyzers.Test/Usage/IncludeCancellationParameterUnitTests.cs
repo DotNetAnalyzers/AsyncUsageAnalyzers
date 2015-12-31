@@ -62,6 +62,26 @@ class ClassName
         }
 
         [Fact]
+        public async Task TestCancellationTokenIsOutParameterAsync()
+        {
+            string testCode = @"
+using System.Threading;
+using System.Threading.Tasks;
+class ClassName
+{
+    public Task MethodAsync(out CancellationToken cancellationToken)
+    {
+        cancellationToken = CancellationToken.None;
+        return Task.FromResult(0);
+    }
+}
+";
+
+            var expected = this.CSharpDiagnostic().WithArguments("MethodAsync").WithLocation(6, 17);
+            await this.VerifyCSharpDiagnosticAsync(testCode, expected, CancellationToken.None).ConfigureAwait(false);
+        }
+
+        [Fact]
         public async Task TestCancellationTokenInStructureAsync()
         {
             string testCode = @"
@@ -162,6 +182,31 @@ struct Context
 ";
 
             var expected = this.CSharpDiagnostic().WithArguments("MethodAsync").WithLocation(6, 23);
+            await this.VerifyCSharpDiagnosticAsync(testCode, expected, CancellationToken.None).ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task TestContextStructureIsOutParameterAsync()
+        {
+            string testCode = @"
+using System.Threading;
+using System.Threading.Tasks;
+class ClassName
+{
+    public Task MethodAsync(out Context context)
+    {
+        context = default(Context);
+        return Task.FromResult(0);
+    }
+}
+
+struct Context
+{
+    public CancellationToken CancellationToken { get; }
+}
+";
+
+            var expected = this.CSharpDiagnostic().WithArguments("MethodAsync").WithLocation(6, 17);
             await this.VerifyCSharpDiagnosticAsync(testCode, expected, CancellationToken.None).ConfigureAwait(false);
         }
 

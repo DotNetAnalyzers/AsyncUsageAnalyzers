@@ -100,6 +100,11 @@ namespace AsyncUsageAnalyzers.Usage
 
                 foreach (var parameterSymbol in symbol.Parameters)
                 {
+                    if (parameterSymbol.RefKind == RefKind.Out)
+                    {
+                        continue;
+                    }
+
                     INamedTypeSymbol parameterType = parameterSymbol.Type as INamedTypeSymbol;
                     if (this.cancellationTokenType.Equals(parameterType))
                     {
