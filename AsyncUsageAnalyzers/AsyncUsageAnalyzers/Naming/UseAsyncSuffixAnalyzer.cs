@@ -70,6 +70,16 @@ namespace AsyncUsageAnalyzers.Naming
                     return;
                 }
 
+                if (symbol.IsOverride)
+                {
+                    return;
+                }
+
+                if (!symbol.ExplicitInterfaceImplementations.IsDefaultOrEmpty)
+                {
+                    return;
+                }
+
                 Location location = symbol.Locations[0];
                 if (!location.IsInSource || location.SourceTree.IsGeneratedDocument(this.generatedHeaderCache, context.CancellationToken))
                 {
@@ -82,6 +92,7 @@ namespace AsyncUsageAnalyzers.Naming
                     return;
                 }
 
+                // This check conveniently covers Task and Task<T> by ignoring the `1 in Task<T>.
                 if (!string.Equals(nameof(Task), symbol.ReturnType?.Name, StringComparison.Ordinal))
                 {
                     return;
@@ -95,6 +106,22 @@ namespace AsyncUsageAnalyzers.Naming
                 if (symbol.MethodKind == MethodKind.PropertyGet || symbol.MethodKind == MethodKind.PropertySet)
                 {
                     return;
+                }
+
+                if ((symbol.ContainingType.TypeKind == TypeKind.Class || symbol.ContainingType.TypeKind == TypeKind.Struct)
+                    && symbol.DeclaredAccessibility == Accessibility.Public)
+                {
+                    // As a final check, make sure the method isn't implicitly implementing an interface method
+                    foreach (INamedTypeSymbol interfaceType in symbol.ContainingType.AllInterfaces)
+                    {
+                        foreach (var member in interfaceType.GetMembers(symbol.Name))
+                        {
+                            if (Equals(symbol.ContainingType.FindImplementationForInterfaceMember(member), symbol))
+                            {
+                                return;
+                            }
+                        }
+                    }
                 }
 
                 context.ReportDiagnostic(Diagnostic.Create(Descriptor, symbol.Locations[0], symbol.Name));
