@@ -1,29 +1,33 @@
-﻿namespace AsyncUsageAnalyzers
+﻿// Copyright (c) Tunnel Vision Laboratories, LLC. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
+namespace AsyncUsageAnalyzers
 {
     using System;
     using Microsoft.CodeAnalysis.Diagnostics;
 
     /// <summary>
-    /// This attribute is applied to <see cref="DiagnosticAnalyzer"/>'s if will not get a code fix.
-    /// Reasons for this would be:
+    /// This attribute is applied to <see cref="DiagnosticAnalyzer"/>s for which no code fix is currently planned.
+    /// </summary>
+    /// <remarks>
+    /// <para>There are several reasons an analyzer does not have a code fix, including but not limited to the
+    /// following:</para>
     /// <list type="bullet">
     /// <item>Visual Studio provides a built-in code fix.</item>
     /// <item>A code fix could not provide a useful solution.</item>
     /// </list>
-    /// The reason should be provided.
-    /// </summary>
-    [AttributeUsage(System.AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
-    public sealed class NoCodeFixAttribute : System.Attribute
+    /// <para>The <see cref="Reason"/> should be provided.</para>
+    /// </remarks>
+    [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
+    internal sealed class NoCodeFixAttribute : Attribute
     {
-        private readonly string reason;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="NoCodeFixAttribute"/> class.
         /// </summary>
         /// <param name="reason">The reason why the <see cref="DiagnosticAnalyzer"/> does not have a code fix.</param>
         public NoCodeFixAttribute(string reason)
         {
-            this.reason = reason;
+            this.Reason = reason;
         }
 
         /// <summary>
@@ -34,7 +38,7 @@
         /// </value>
         public string Reason
         {
-            get { return this.reason; }
+            get;
         }
     }
 }

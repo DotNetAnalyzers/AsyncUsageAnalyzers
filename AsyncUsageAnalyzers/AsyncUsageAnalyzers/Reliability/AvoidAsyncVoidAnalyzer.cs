@@ -1,5 +1,10 @@
-﻿namespace AsyncUsageAnalyzers.Reliability
+﻿// Copyright (c) Tunnel Vision Laboratories, LLC. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
+namespace AsyncUsageAnalyzers.Reliability
 {
+    using System;
+    using System.Collections.Concurrent;
     using System.Collections.Immutable;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
@@ -12,7 +17,7 @@
     /// </summary>
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     [NoCodeFix("No clear transformation to correct violations of this rule.")]
-    public class AvoidAsyncVoidAnalyzer : DiagnosticAnalyzer
+    internal class AvoidAsyncVoidAnalyzer : DiagnosticAnalyzer
     {
         /// <summary>
         /// The ID for diagnostics produced by the <see cref="AvoidAsyncVoidAnalyzer"/> analyzer.
@@ -22,52 +27,90 @@
         private static readonly LocalizableString MessageFormat = new LocalizableResourceString(nameof(ReliabilityResources.AvoidAsyncVoidMessageFormat), ReliabilityResources.ResourceManager, typeof(ReliabilityResources));
         private static readonly string Category = "AsyncUsage.CSharp.Reliability";
         private static readonly LocalizableString Description = new LocalizableResourceString(nameof(ReliabilityResources.AvoidAsyncVoidDescription), ReliabilityResources.ResourceManager, typeof(ReliabilityResources));
-        private static readonly string HelpLink = "https://github.com/DotNetAnalyzers/AsyncUsageAnalyzers";
+        private static readonly string HelpLink = "https://github.com/DotNetAnalyzers/AsyncUsageAnalyzers/blob/master/documentation/AvoidAsyncVoid.md";
 
         private static readonly DiagnosticDescriptor Descriptor =
-            new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, true, Description, HelpLink);
+            new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, AnalyzerConstants.EnabledByDefault, Description, HelpLink);
+
+        private static readonly ImmutableArray<SyntaxKind> AnonymousFunctionExpressionKinds =
+            ImmutableArray.Create(
+                SyntaxKind.AnonymousMethodExpression,
+                SyntaxKind.ParenthesizedLambdaExpression,
+                SyntaxKind.SimpleLambdaExpression);
+
+        private static readonly Action<CompilationStartAnalysisContext> CompilationStartAction = HandleCompilationStart;
+        private static readonly Action<SyntaxNodeAnalysisContext> AnonymousFunctionExpressionAction = HandleAnonymousFunctionExpression;
 
         /// <inheritdoc/>
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = ImmutableArray.Create(Descriptor);
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } =
+            ImmutableArray.Create(Descriptor);
 
         /// <inheritdoc/>
         public override void Initialize(AnalysisContext context)
         {
-            context.RegisterSymbolAction(HandleMethodDeclaration, SymbolKind.Method);
-            context.RegisterSyntaxNodeActionHonorExclusions(
-                HandleAnonymousFunctionExpression,
-                SyntaxKind.AnonymousMethodExpression,
-                SyntaxKind.ParenthesizedLambdaExpression,
-                SyntaxKind.SimpleLambdaExpression);
+            context.RegisterCompilationStartAction(CompilationStartAction);
         }
 
-        private void HandleMethodDeclaration(SymbolAnalysisContext context)
+        private static void HandleCompilationStart(CompilationStartAnalysisContext context)
         {
-            IMethodSymbol symbol = (IMethodSymbol)context.Symbol;
-            if (!symbol.IsAsync || !symbol.ReturnsVoid)
-                return;
-
-            context.ReportDiagnostic(Diagnostic.Create(Descriptor, symbol.Locations[0], symbol.Name));
+            Analyzer analyzer = new Analyzer(context.Compilation.GetOrCreateGeneratedDocumentCache());
+            context.RegisterSymbolAction(analyzer.HandleMethodDeclaration, SymbolKind.Method);
+            context.RegisterSyntaxNodeActionHonorExclusions(AnonymousFunctionExpressionAction, AnonymousFunctionExpressionKinds);
         }
 
         private static void HandleAnonymousFunctionExpression(SyntaxNodeAnalysisContext context)
         {
             AnonymousFunctionExpressionSyntax node = (AnonymousFunctionExpressionSyntax)context.Node;
             if (node.AsyncKeyword.IsKind(SyntaxKind.None) || node.AsyncKeyword.IsMissing)
+            {
                 return;
+            }
 
             TypeInfo typeInfo = context.SemanticModel.GetTypeInfo(node);
             INamedTypeSymbol convertedType = typeInfo.ConvertedType as INamedTypeSymbol;
             if (convertedType == null)
+            {
                 return;
+            }
 
             if (convertedType.TypeKind != TypeKind.Delegate || convertedType.DelegateInvokeMethod == null)
+            {
                 return;
+            }
 
             if (!convertedType.DelegateInvokeMethod.ReturnsVoid)
+            {
                 return;
+            }
 
             context.ReportDiagnostic(Diagnostic.Create(Descriptor, node.AsyncKeyword.GetLocation(), "<anonymous>"));
+        }
+
+        private sealed class Analyzer
+        {
+            private readonly ConcurrentDictionary<SyntaxTree, bool> generatedHeaderCache;
+
+            public Analyzer(ConcurrentDictionary<SyntaxTree, bool> generatedHeaderCache)
+            {
+                this.generatedHeaderCache = generatedHeaderCache;
+            }
+
+            public void HandleMethodDeclaration(SymbolAnalysisContext context)
+            {
+                IMethodSymbol symbol = (IMethodSymbol)context.Symbol;
+                if (!symbol.IsAsync || !symbol.ReturnsVoid)
+                {
+                    return;
+                }
+
+                Location location = symbol.Locations[0];
+                if (!location.IsInSource || location.SourceTree.IsGeneratedDocument(this.generatedHeaderCache, context.CancellationToken))
+                {
+                    return;
+                }
+
+                context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, symbol.Name));
+            }
         }
     }
 }

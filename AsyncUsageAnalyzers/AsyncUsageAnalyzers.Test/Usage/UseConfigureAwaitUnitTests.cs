@@ -1,5 +1,9 @@
-﻿namespace AsyncUsageAnalyzers.Test.Usage
+﻿// Copyright (c) Tunnel Vision Laboratories, LLC. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
+namespace AsyncUsageAnalyzers.Test.Usage
 {
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using AsyncUsageAnalyzers.Usage;
@@ -11,7 +15,7 @@
     public class UseConfigureAwaitUnitTests : CodeFixVerifier
     {
         [Fact]
-        public async Task TestSimpleExpression()
+        public async Task TestSimpleExpressionAsync()
         {
             string testCode = @"
 using System.Threading.Tasks;
@@ -34,14 +38,14 @@ class ClassName
 }
 ";
 
-            DiagnosticResult expected = CSharpDiagnostic().WithLocation(7, 15);
-            await VerifyCSharpDiagnosticAsync(testCode, expected, CancellationToken.None).ConfigureAwait(false);
-            await VerifyCSharpDiagnosticAsync(fixedCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
-            await VerifyCSharpFixAsync(testCode, fixedCode, cancellationToken: CancellationToken.None).ConfigureAwait(false);
+            DiagnosticResult expected = this.CSharpDiagnostic().WithLocation(7, 15);
+            await this.VerifyCSharpDiagnosticAsync(testCode, expected, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpDiagnosticAsync(fixedCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpFixAsync(testCode, fixedCode, cancellationToken: CancellationToken.None).ConfigureAwait(false);
         }
 
         [Fact]
-        public async Task TestNestedExpressions()
+        public async Task TestNestedExpressionsAsync()
         {
             string testCode = @"
 using System.Threading.Tasks;
@@ -76,17 +80,17 @@ class ClassName
 
             DiagnosticResult[] expected =
             {
-                CSharpDiagnostic().WithLocation(12, 15),
-                CSharpDiagnostic().WithLocation(12, 22)
+                this.CSharpDiagnostic().WithLocation(12, 15),
+                this.CSharpDiagnostic().WithLocation(12, 22)
             };
-            await VerifyCSharpDiagnosticAsync(testCode, expected, CancellationToken.None).ConfigureAwait(false);
-            await VerifyCSharpDiagnosticAsync(fixedCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
-            await VerifyCSharpFixAsync(testCode, fixedCode, cancellationToken: CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpDiagnosticAsync(testCode, expected, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpDiagnosticAsync(fixedCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpFixAsync(testCode, fixedCode, cancellationToken: CancellationToken.None).ConfigureAwait(false);
         }
 
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+        protected override IEnumerable<DiagnosticAnalyzer> GetCSharpDiagnosticAnalyzers()
         {
-            return new UseConfigureAwaitAnalyzer();
+            yield return new UseConfigureAwaitAnalyzer();
         }
 
         protected override CodeFixProvider GetCSharpCodeFixProvider()

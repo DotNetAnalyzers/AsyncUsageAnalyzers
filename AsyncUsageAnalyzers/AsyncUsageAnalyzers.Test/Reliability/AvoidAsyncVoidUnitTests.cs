@@ -1,5 +1,9 @@
-﻿namespace AsyncUsageAnalyzers.Test.Reliability
+﻿// Copyright (c) Tunnel Vision Laboratories, LLC. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
+namespace AsyncUsageAnalyzers.Test.Reliability
 {
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using AsyncUsageAnalyzers.Reliability;
@@ -19,8 +23,8 @@ class ClassName
 }
 ";
 
-            DiagnosticResult expected = CSharpDiagnostic().WithArguments("MethodNameAsync").WithLocation(4, 16);
-            await VerifyCSharpDiagnosticAsync(testCode, expected, CancellationToken.None).ConfigureAwait(false);
+            DiagnosticResult expected = this.CSharpDiagnostic().WithArguments("MethodNameAsync").WithLocation(4, 16);
+            await this.VerifyCSharpDiagnosticAsync(testCode, expected, CancellationToken.None).ConfigureAwait(false);
         }
 
         [Fact]
@@ -40,8 +44,8 @@ class ClassName
 ";
 
             // This analyzer does not currently handle this case differently from any other method
-            DiagnosticResult expected = CSharpDiagnostic().WithArguments("MethodNameAsync").WithLocation(10, 16);
-            await VerifyCSharpDiagnosticAsync(testCode, expected, CancellationToken.None).ConfigureAwait(false);
+            DiagnosticResult expected = this.CSharpDiagnostic().WithArguments("MethodNameAsync").WithLocation(10, 16);
+            await this.VerifyCSharpDiagnosticAsync(testCode, expected, CancellationToken.None).ConfigureAwait(false);
         }
 
         [Fact]
@@ -65,11 +69,11 @@ class ClassName
             // This analyzer does not currently handle this case differently from any other method
             DiagnosticResult[] expected =
             {
-                CSharpDiagnostic().WithArguments("<anonymous>").WithLocation(9, 49),
-                CSharpDiagnostic().WithArguments("<anonymous>").WithLocation(10, 49),
-                CSharpDiagnostic().WithArguments("<anonymous>").WithLocation(11, 32),
+                this.CSharpDiagnostic().WithArguments("<anonymous>").WithLocation(9, 49),
+                this.CSharpDiagnostic().WithArguments("<anonymous>").WithLocation(10, 49),
+                this.CSharpDiagnostic().WithArguments("<anonymous>").WithLocation(11, 32),
             };
-            await VerifyCSharpDiagnosticAsync(testCode, expected, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpDiagnosticAsync(testCode, expected, CancellationToken.None).ConfigureAwait(false);
         }
 
         [Fact]
@@ -93,7 +97,7 @@ class ClassName
 }
 ";
 
-            await VerifyCSharpDiagnosticAsync(testCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpDiagnosticAsync(testCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
         }
 
         [Fact]
@@ -107,7 +111,7 @@ class ClassName
 }
 ";
 
-            await VerifyCSharpDiagnosticAsync(testCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpDiagnosticAsync(testCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
         }
 
         [Fact]
@@ -121,7 +125,7 @@ class ClassName
 }
 ";
 
-            await VerifyCSharpDiagnosticAsync(testCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpDiagnosticAsync(testCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
         }
 
         [Fact]
@@ -135,7 +139,7 @@ class ClassName
 }
 ";
 
-            await VerifyCSharpDiagnosticAsync(testCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpDiagnosticAsync(testCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
         }
 
         [Fact]
@@ -149,12 +153,12 @@ class ClassName
 }
 ";
 
-            await VerifyCSharpDiagnosticAsync(testCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpDiagnosticAsync(testCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
         }
 
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+        protected override IEnumerable<DiagnosticAnalyzer> GetCSharpDiagnosticAnalyzers()
         {
-            return new AvoidAsyncVoidAnalyzer();
+            yield return new AvoidAsyncVoidAnalyzer();
         }
     }
 }

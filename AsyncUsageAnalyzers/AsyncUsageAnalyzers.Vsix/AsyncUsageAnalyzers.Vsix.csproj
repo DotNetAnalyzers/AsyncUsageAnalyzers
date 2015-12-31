@@ -58,6 +58,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\AsyncUsageAnalyzers.CodeFixes\AsyncUsageAnalyzers.CodeFixes.csproj">
+      <Project>{ba0cd420-1e79-4fbc-b023-09c03bcdffac}</Project>
+      <Name>AsyncUsageAnalyzers.CodeFixes</Name>
+    </ProjectReference>
     <ProjectReference Include="..\AsyncUsageAnalyzers\AsyncUsageAnalyzers.csproj">
       <Project>{4E32037D-3EE0-419A-BC68-7D28FCD453A0}</Project>
       <Name>AsyncUsageAnalyzers</Name>

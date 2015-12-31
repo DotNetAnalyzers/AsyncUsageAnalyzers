@@ -1,9 +1,13 @@
-﻿namespace AsyncUsageAnalyzers.Usage
+﻿// Copyright (c) Tunnel Vision Laboratories, LLC. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
+namespace AsyncUsageAnalyzers.Usage
 {
     using System.Collections.Immutable;
     using System.Composition;
     using System.Threading;
     using System.Threading.Tasks;
+    using Helpers;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CodeActions;
     using Microsoft.CodeAnalysis.CodeFixes;
@@ -16,7 +20,7 @@
     /// </summary>
     [ExportCodeFixProvider(LanguageNames.CSharp, LanguageNames.VisualBasic, Name = nameof(UseConfigureAwaitCodeFixProvider))]
     [Shared]
-    public class UseConfigureAwaitCodeFixProvider : CodeFixProvider
+    internal class UseConfigureAwaitCodeFixProvider : CodeFixProvider
     {
         private static readonly ImmutableArray<string> FixableDiagnostics =
             ImmutableArray.Create(UseConfigureAwaitAnalyzer.DiagnosticId);
@@ -27,7 +31,7 @@
         /// <inheritdoc/>
         public override FixAllProvider GetFixAllProvider()
         {
-            return WellKnownFixAllProviders.BatchFixer;
+            return CustomFixAllProviders.BatchFixer;
         }
 
         /// <inheritdoc/>
@@ -40,13 +44,18 @@
                     continue;
                 }
 
-                context.RegisterCodeFix(CodeAction.Create("Use ConfigureAwait(false)", cancellationToken => GetTransformedDocumentAsync(context.Document, diagnostic, cancellationToken)), diagnostic);
+                context.RegisterCodeFix(
+                    CodeAction.Create(
+                        "Use ConfigureAwait(false)",
+                        cancellationToken => GetTransformedDocumentAsync(context.Document, diagnostic, cancellationToken),
+                        nameof(UseConfigureAwaitCodeFixProvider) + "_False"),
+                    diagnostic);
             }
 
             return Task.FromResult(true);
         }
 
-        private async Task<Document> GetTransformedDocumentAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
+        private static async Task<Document> GetTransformedDocumentAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
             SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             ExpressionSyntax expression = (ExpressionSyntax)root.FindNode(diagnostic.Location.SourceSpan);

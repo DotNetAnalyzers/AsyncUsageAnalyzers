@@ -1,15 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\packages\Tvl.NuGet.BuildTasks.1.0.0-alpha002\build\Tvl.NuGet.BuildTasks.props" Condition="Exists('..\..\packages\Tvl.NuGet.BuildTasks.1.0.0-alpha002\build\Tvl.NuGet.BuildTasks.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{4E32037D-3EE0-419A-BC68-7D28FCD453A0}</ProjectGuid>
+    <ProjectGuid>{BA0CD420-1E79-4FBC-B023-09C03BCDFFAC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AsyncUsageAnalyzers</RootNamespace>
-    <AssemblyName>AsyncUsageAnalyzers</AssemblyName>
+    <AssemblyName>AsyncUsageAnalyzers.CodeFixes</AssemblyName>
     <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <TargetFrameworkProfile>Profile7</TargetFrameworkProfile>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
@@ -42,69 +43,15 @@
     <AssemblyOriginatorKeyFile Condition="'$(KeyConfiguration)' == 'Final'">..\..\build\keys\AsyncUsageAnalyzers.snk</AssemblyOriginatorKeyFile>
     <AssemblyOriginatorKeyFile Condition="'$(KeyConfiguration)' != 'Final'">..\..\build\keys\AsyncUsageAnalyzers.dev.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(KeyConfiguration)' != 'Final'">
-    <DefineConstants>$(DefineConstants);DEVELOPMENT_KEY</DefineConstants>
-  </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AnalyzerConstants.cs" />
-    <Compile Include="AnalyzerExtensions.cs" />
-    <Compile Include="ExcludeFromCodeCoverageAttribute.cs" />
-    <Compile Include="GeneratedCodeAnalysisExtensions.cs" />
-    <Compile Include="Helpers\HelpersResources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>HelpersResources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Helpers\SpecializedTasks.cs" />
-    <Compile Include="Helpers\TriviaHelper.cs" />
-    <Compile Include="Naming\AvoidAsyncSuffixAnalyzer.cs" />
-    <Compile Include="Naming\NamingResources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>NamingResources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Naming\UseAsyncSuffixAnalyzer.cs" />
-    <Compile Include="NoCodeFixAttribute.cs" />
+    <Compile Include="Helpers\CustomBatchFixAllProvider.cs" />
+    <Compile Include="Helpers\CustomFixAllProviders.cs" />
+    <Compile Include="Helpers\FixAllContextHelper.cs" />
+    <Compile Include="Helpers\RenameHelper.cs" />
+    <Compile Include="Naming\AvoidAsyncSuffixCodeFixProvider.cs" />
+    <Compile Include="Naming\UseAsyncSuffixCodeFixProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Reliability\AvoidAsyncVoidAnalyzer.cs" />
-    <Compile Include="Reliability\ReliabilityResources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ReliabilityResources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Usage\UsageResources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>UsageResources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Usage\UseConfigureAwaitAnalyzer.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Helpers\HelpersResources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>HelpersResources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Naming\NamingResources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>NamingResources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Reliability\ReliabilityResources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>ReliabilityResources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Usage\UsageResources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>UsageResources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
+    <Compile Include="Usage\UseConfigureAwaitCodeFixProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\build\keys\AsyncUsageAnalyzers.dev.snk">
@@ -113,7 +60,19 @@
     <None Include="..\..\build\keys\AsyncUsageAnalyzers.snk">
       <Link>AsyncUsageAnalyzers.snk</Link>
     </None>
+    <NuGetManifest Include="AsyncUsageAnalyzers.nuspec">
+      <SubType>Designer</SubType>
+      <Symbols>True</Symbols>
+      <PackageAnalysis>False</PackageAnalysis>
+    </NuGetManifest>
     <None Include="packages.config" />
+    <None Include="tools\install.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="tools\uninstall.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="..\stylecop.json">
@@ -127,6 +86,14 @@
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.CSharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.CodeAnalysis.CSharp.1.0.0\lib\portable-net45+win8\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp.Workspaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.CodeAnalysis.CSharp.Workspaces.1.0.0\lib\portable-net45+win8\Microsoft.CodeAnalysis.CSharp.Workspaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.0.0\lib\portable-net45+win8\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Collections.Immutable, Version=1.1.36.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -166,7 +133,21 @@
     <Analyzer Include="..\..\packages\StyleCop.Analyzers.1.0.0-rc3\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
     <Analyzer Include="..\..\packages\StyleCop.Analyzers.1.0.0-rc3\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AsyncUsageAnalyzers\AsyncUsageAnalyzers.csproj">
+      <Project>{4e32037d-3ee0-419a-bc68-7d28fcd453a0}</Project>
+      <Name>AsyncUsageAnalyzers</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\v4.5\Microsoft.Portable.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\packages\Tvl.NuGet.BuildTasks.1.0.0-alpha002\build\Tvl.NuGet.BuildTasks.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Tvl.NuGet.BuildTasks.1.0.0-alpha002\build\Tvl.NuGet.BuildTasks.props'))" />
+    <Error Condition="!Exists('..\..\packages\Tvl.NuGet.BuildTasks.1.0.0-alpha002\build\Tvl.NuGet.BuildTasks.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Tvl.NuGet.BuildTasks.1.0.0-alpha002\build\Tvl.NuGet.BuildTasks.targets'))" />
+  </Target>
+  <Import Project="..\..\packages\Tvl.NuGet.BuildTasks.1.0.0-alpha002\build\Tvl.NuGet.BuildTasks.targets" Condition="Exists('..\..\packages\Tvl.NuGet.BuildTasks.1.0.0-alpha002\build\Tvl.NuGet.BuildTasks.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
