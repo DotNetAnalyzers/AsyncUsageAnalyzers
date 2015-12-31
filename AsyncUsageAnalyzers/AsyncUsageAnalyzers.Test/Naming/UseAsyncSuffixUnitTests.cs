@@ -122,6 +122,205 @@ class ClassName
         }
 
         [Fact]
+        public async Task TestInheritedReturnTaskAsync()
+        {
+            string testCode = @"
+using System.Threading.Tasks;
+class BaseName
+{
+    protected virtual Task Method() { return Task.FromResult(3); }
+}
+class ClassName : BaseName
+{
+    protected override Task Method() { return Task.FromResult(3); }
+}
+";
+            string fixedCode = @"
+using System.Threading.Tasks;
+class BaseName
+{
+    protected virtual Task MethodAsync() { return Task.FromResult(3); }
+}
+class ClassName : BaseName
+{
+    protected override Task MethodAsync() { return Task.FromResult(3); }
+}
+";
+
+            DiagnosticResult expected = this.CSharpDiagnostic().WithArguments("Method").WithLocation(5, 28);
+            await this.VerifyCSharpDiagnosticAsync(testCode, expected, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpDiagnosticAsync(fixedCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpFixAsync(testCode, fixedCode, cancellationToken: CancellationToken.None).ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task TestExplicitInterfaceReturnTaskAsync()
+        {
+            string testCode = @"
+using System.Threading.Tasks;
+interface InterfaceName
+{
+    Task Method();
+}
+class ClassName : InterfaceName
+{
+    Task InterfaceName.Method() { return Task.FromResult(3); }
+}
+";
+            string fixedCode = @"
+using System.Threading.Tasks;
+interface InterfaceName
+{
+    Task MethodAsync();
+}
+class ClassName : InterfaceName
+{
+    Task InterfaceName.MethodAsync() { return Task.FromResult(3); }
+}
+";
+
+            DiagnosticResult expected = this.CSharpDiagnostic().WithArguments("Method").WithLocation(5, 10);
+            await this.VerifyCSharpDiagnosticAsync(testCode, expected, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpDiagnosticAsync(fixedCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpFixAsync(testCode, fixedCode, cancellationToken: CancellationToken.None).ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task TestExplicitInterfaceReturnTaskPlusExtraAsync()
+        {
+            string testCode = @"
+using System.Threading.Tasks;
+interface InterfaceName
+{
+    Task Method();
+}
+class ClassName : InterfaceName
+{
+    Task Method() { return Task.FromResult(3); }
+    Task InterfaceName.Method() { return Task.FromResult(3); }
+}
+";
+            string fixedCode = @"
+using System.Threading.Tasks;
+interface InterfaceName
+{
+    Task MethodAsync();
+}
+class ClassName : InterfaceName
+{
+    Task MethodAsync() { return Task.FromResult(3); }
+    Task InterfaceName.MethodAsync() { return Task.FromResult(3); }
+}
+";
+
+            DiagnosticResult[] expected =
+            {
+                this.CSharpDiagnostic().WithArguments("Method").WithLocation(5, 10),
+                this.CSharpDiagnostic().WithArguments("Method").WithLocation(9, 10)
+            };
+
+            await this.VerifyCSharpDiagnosticAsync(testCode, expected, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpDiagnosticAsync(fixedCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpFixAsync(testCode, fixedCode, cancellationToken: CancellationToken.None).ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task TestImplicitInterfaceReturnTaskAsync()
+        {
+            string testCode = @"
+using System.Threading.Tasks;
+interface InterfaceName
+{
+    Task Method();
+}
+class ClassName : InterfaceName
+{
+    public Task Method() { return Task.FromResult(3); }
+}
+";
+            string fixedCode = @"
+using System.Threading.Tasks;
+interface InterfaceName
+{
+    Task MethodAsync();
+}
+class ClassName : InterfaceName
+{
+    public Task MethodAsync() { return Task.FromResult(3); }
+}
+";
+
+            DiagnosticResult expected = this.CSharpDiagnostic().WithArguments("Method").WithLocation(5, 10);
+            await this.VerifyCSharpDiagnosticAsync(testCode, expected, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpDiagnosticAsync(fixedCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpFixAsync(testCode, fixedCode, cancellationToken: CancellationToken.None).ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task TestImplicitGenericInterfaceReturnTaskAsync()
+        {
+            string testCode = @"
+using System.Threading.Tasks;
+interface InterfaceName<T>
+{
+    Task Method(T value);
+}
+class ClassName : InterfaceName<int>
+{
+    public Task Method(int value) { return Task.FromResult(value); }
+}
+";
+            string fixedCode = @"
+using System.Threading.Tasks;
+interface InterfaceName<T>
+{
+    Task MethodAsync(T value);
+}
+class ClassName : InterfaceName<int>
+{
+    public Task MethodAsync(int value) { return Task.FromResult(value); }
+}
+";
+
+            DiagnosticResult expected = this.CSharpDiagnostic().WithArguments("Method").WithLocation(5, 10);
+            await this.VerifyCSharpDiagnosticAsync(testCode, expected, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpDiagnosticAsync(fixedCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpFixAsync(testCode, fixedCode, cancellationToken: CancellationToken.None).ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task TestImplicitGenericInterfaceMethodReturnTaskAsync()
+        {
+            string testCode = @"
+using System.Threading.Tasks;
+interface InterfaceName
+{
+    Task Method<T>(T value);
+}
+class ClassName : InterfaceName
+{
+    public Task Method<T>(T value) { return Task.FromResult(value); }
+}
+";
+            string fixedCode = @"
+using System.Threading.Tasks;
+interface InterfaceName
+{
+    Task MethodAsync<T>(T value);
+}
+class ClassName : InterfaceName
+{
+    public Task MethodAsync<T>(T value) { return Task.FromResult(value); }
+}
+";
+
+            DiagnosticResult expected = this.CSharpDiagnostic().WithArguments("Method").WithLocation(5, 10);
+            await this.VerifyCSharpDiagnosticAsync(testCode, expected, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpDiagnosticAsync(fixedCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpFixAsync(testCode, fixedCode, cancellationToken: CancellationToken.None).ConfigureAwait(false);
+        }
+
+        [Fact]
         public async Task TestReturnGenericTaskAsync()
         {
             string testCode = @"

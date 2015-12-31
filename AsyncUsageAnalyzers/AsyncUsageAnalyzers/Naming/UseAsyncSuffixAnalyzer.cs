@@ -7,6 +7,7 @@ namespace AsyncUsageAnalyzers.Naming
     using System.Collections.Concurrent;
     using System.Collections.Immutable;
     using System.Threading.Tasks;
+    using AsyncUsageAnalyzers.Helpers;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.Diagnostics;
 
@@ -65,34 +66,22 @@ namespace AsyncUsageAnalyzers.Naming
                     return;
                 }
 
-                if (symbol.Locations.IsDefaultOrEmpty)
+                if (!symbol.IsInAnalyzedSource(this.generatedHeaderCache, context.CancellationToken))
                 {
                     return;
                 }
 
-                Location location = symbol.Locations[0];
-                if (!location.IsInSource || location.SourceTree.IsGeneratedDocument(this.generatedHeaderCache, context.CancellationToken))
-                {
-                    return;
-                }
-
-                // void-returning methods are not asynchronous according to their signature, even if they use `async`
-                if (symbol.ReturnsVoid)
-                {
-                    return;
-                }
-
-                if (!string.Equals(nameof(Task), symbol.ReturnType?.Name, StringComparison.Ordinal))
-                {
-                    return;
-                }
-
-                if (!string.Equals(typeof(Task).Namespace, symbol.ReturnType?.ContainingNamespace?.ToString(), StringComparison.Ordinal))
+                if (!symbol.HasAsyncSignature())
                 {
                     return;
                 }
 
                 if (symbol.MethodKind == MethodKind.PropertyGet || symbol.MethodKind == MethodKind.PropertySet)
+                {
+                    return;
+                }
+
+                if (symbol.IsOverrideOrImplementation())
                 {
                     return;
                 }
