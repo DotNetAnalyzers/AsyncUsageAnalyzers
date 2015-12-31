@@ -61,7 +61,7 @@ namespace AsyncUsageAnalyzers.Reliability
         private static void HandleAnonymousFunctionExpression(SyntaxNodeAnalysisContext context)
         {
             AnonymousFunctionExpressionSyntax node = (AnonymousFunctionExpressionSyntax)context.Node;
-            if (node.AsyncKeyword.IsKind(SyntaxKind.None) || node.AsyncKeyword.IsMissing)
+            if (node.AsyncKeyword.IsKind(SyntaxKind.None))
             {
                 return;
             }
@@ -73,7 +73,8 @@ namespace AsyncUsageAnalyzers.Reliability
                 return;
             }
 
-            if (convertedType.TypeKind != TypeKind.Delegate || convertedType.DelegateInvokeMethod == null)
+            // This checks that the type is a delegate and also that it is not ill-formed
+            if (convertedType.DelegateInvokeMethod == null)
             {
                 return;
             }

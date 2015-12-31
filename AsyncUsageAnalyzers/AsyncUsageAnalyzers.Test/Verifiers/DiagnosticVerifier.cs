@@ -30,6 +30,11 @@ namespace TestHelper
         {
             var testCode = string.Empty;
             await this.VerifyCSharpDiagnosticAsync(testCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+
+            testCode =
+                "   \r\n"
+                + "\r\n";
+            await this.VerifyCSharpDiagnosticAsync(testCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
         }
 
         /// <summary>

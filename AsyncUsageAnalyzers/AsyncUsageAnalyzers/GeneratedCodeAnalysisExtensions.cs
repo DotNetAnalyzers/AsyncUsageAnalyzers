@@ -175,7 +175,7 @@ namespace AsyncUsageAnalyzers
             var firstToken = root.GetFirstToken(includeZeroWidth: true);
 
             return firstToken.IsKind(SyntaxKind.EndOfFileToken)
-                && TriviaHelper.IndexOfFirstNonWhitespaceTrivia(firstToken.LeadingTrivia) == -1;
+                && TriviaHelper.IndexOfFirstNonWhitespaceTrivia(firstToken.LeadingTrivia, true) == -1;
         }
     }
 }

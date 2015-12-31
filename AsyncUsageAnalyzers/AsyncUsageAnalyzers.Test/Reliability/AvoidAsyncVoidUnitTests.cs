@@ -7,12 +7,19 @@ namespace AsyncUsageAnalyzers.Test.Reliability
     using System.Threading;
     using System.Threading.Tasks;
     using AsyncUsageAnalyzers.Reliability;
+    using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.Diagnostics;
     using TestHelper;
     using Xunit;
 
     public class AvoidAsyncVoidUnitTests : DiagnosticVerifier
     {
+        private static readonly DiagnosticDescriptor CS1660 =
+            new DiagnosticDescriptor("CS1660", "Error", "Cannot convert lambda expression to type '{0}' because it is not a delegate type", "Compiler", DiagnosticSeverity.Error, true);
+
+        private static readonly DiagnosticDescriptor CS1989 =
+            new DiagnosticDescriptor("CS1989", "Error", "Async lambda expressions cannot be converted to expression trees", "Compiler", DiagnosticSeverity.Error, true);
+
         [Fact]
         public async Task TestAsyncReturnVoidAsync()
         {
@@ -98,6 +105,82 @@ class ClassName
 ";
 
             await this.VerifyCSharpDiagnosticAsync(testCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task TestNonAsyncLambdaReturnTaskAsync()
+        {
+            string testCode = @"
+using System;
+using System.Threading.Tasks;
+class ClassName
+{
+    static Func<Task> ZeroArgumentFunction;
+    static Func<object, Task> SingleArgumentFunction;
+
+    ClassName()
+    {
+        ZeroArgumentFunction = () => Task.Delay(42);
+        SingleArgumentFunction = arg => Task.Delay(42);
+        SingleArgumentFunction = (object arg) => Task.Delay(42);
+        SingleArgumentFunction = delegate (object arg) { return Task.Delay(42); };
+    }
+}
+";
+
+            await this.VerifyCSharpDiagnosticAsync(testCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task TestAsyncExpressionLambdaReturnTaskAsync()
+        {
+            string testCode = @"
+using System;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+class ClassName
+{
+    static Expression<Func<Task>> ZeroArgumentFunction;
+    static Expression<Func<object, Task>> SingleArgumentFunction;
+
+    ClassName()
+    {
+        ZeroArgumentFunction = async () => await Task.Delay(42);
+        SingleArgumentFunction = async arg => await Task.Delay(42);
+        SingleArgumentFunction = async (object arg) => await Task.Delay(42);
+    }
+}
+";
+
+            DiagnosticResult[] expected =
+            {
+                this.CSharpDiagnostic(CS1989).WithLocation(12, 32),
+                this.CSharpDiagnostic(CS1989).WithLocation(13, 34),
+                this.CSharpDiagnostic(CS1989).WithLocation(14, 34),
+            };
+            await this.VerifyCSharpDiagnosticAsync(testCode, expected, CancellationToken.None).ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task TestAsyncDynamicLambdaReturnTaskAsync()
+        {
+            string testCode = @"
+using System;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+class ClassName
+{
+    static dynamic ZeroArgumentFunction;
+
+    ClassName()
+    {
+        ZeroArgumentFunction = async () => await Task.Delay(42);
+    }
+}
+";
+
+            DiagnosticResult expected = this.CSharpDiagnostic(CS1660).WithArguments("dynamic").WithLocation(11, 32);
+            await this.VerifyCSharpDiagnosticAsync(testCode, expected, CancellationToken.None).ConfigureAwait(false);
         }
 
         [Fact]
