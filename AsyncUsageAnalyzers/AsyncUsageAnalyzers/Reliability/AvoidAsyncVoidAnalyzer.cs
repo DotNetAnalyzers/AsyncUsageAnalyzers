@@ -6,6 +6,7 @@ namespace AsyncUsageAnalyzers.Reliability
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Immutable;
+    using AsyncUsageAnalyzers.Helpers;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -104,13 +105,12 @@ namespace AsyncUsageAnalyzers.Reliability
                     return;
                 }
 
-                Location location = symbol.Locations[0];
-                if (!location.IsInSource || location.SourceTree.IsGeneratedDocument(this.generatedHeaderCache, context.CancellationToken))
+                if (!symbol.IsInAnalyzedSource(this.generatedHeaderCache, context.CancellationToken))
                 {
                     return;
                 }
 
-                context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, symbol.Name));
+                context.ReportDiagnostic(Diagnostic.Create(Descriptor, symbol.Locations[0], symbol.Name));
             }
         }
     }

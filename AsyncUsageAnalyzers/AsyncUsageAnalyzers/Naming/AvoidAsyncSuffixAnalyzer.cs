@@ -7,6 +7,7 @@ namespace AsyncUsageAnalyzers.Naming
     using System.Collections.Concurrent;
     using System.Collections.Immutable;
     using System.Threading.Tasks;
+    using AsyncUsageAnalyzers.Helpers;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.Diagnostics;
 
@@ -60,61 +61,24 @@ namespace AsyncUsageAnalyzers.Naming
             public void HandleMethodDeclaration(SymbolAnalysisContext context)
             {
                 IMethodSymbol symbol = (IMethodSymbol)context.Symbol;
-                if (symbol.IsAsync)
-                {
-                    return;
-                }
-
                 if (!symbol.Name.EndsWith("Async", StringComparison.Ordinal))
                 {
                     return;
                 }
 
-                if (symbol.IsOverride)
+                if (symbol.HasAsyncSignature(treatAsyncVoidAsAsync: true))
                 {
                     return;
                 }
 
-                if (!symbol.ExplicitInterfaceImplementations.IsDefaultOrEmpty)
+                if (!symbol.IsInAnalyzedSource(this.generatedHeaderCache, context.CancellationToken))
                 {
                     return;
                 }
 
-                if (symbol.Locations.IsDefaultOrEmpty)
+                if (symbol.IsOverrideOrImplementation())
                 {
                     return;
-                }
-
-                Location location = symbol.Locations[0];
-                if (!location.IsInSource || location.SourceTree.IsGeneratedDocument(this.generatedHeaderCache, context.CancellationToken))
-                {
-                    return;
-                }
-
-                if (!symbol.ReturnsVoid)
-                {
-                    // This check conveniently covers Task and Task<T> by ignoring the `1 in Task<T>.
-                    if (string.Equals(nameof(Task), symbol.ReturnType?.Name, StringComparison.Ordinal)
-                        && string.Equals(typeof(Task).Namespace, symbol.ReturnType?.ContainingNamespace?.ToString(), StringComparison.Ordinal))
-                    {
-                        return;
-                    }
-                }
-
-                if ((symbol.ContainingType.TypeKind == TypeKind.Class || symbol.ContainingType.TypeKind == TypeKind.Struct)
-                    && symbol.DeclaredAccessibility == Accessibility.Public)
-                {
-                    // As a final check, make sure the method isn't implicitly implementing an interface method
-                    foreach (INamedTypeSymbol interfaceType in symbol.ContainingType.AllInterfaces)
-                    {
-                        foreach (var member in interfaceType.GetMembers(symbol.Name))
-                        {
-                            if (Equals(symbol.ContainingType.FindImplementationForInterfaceMember(member), symbol))
-                            {
-                                return;
-                            }
-                        }
-                    }
                 }
 
                 context.ReportDiagnostic(Diagnostic.Create(Descriptor, symbol.Locations[0], symbol.Name));
