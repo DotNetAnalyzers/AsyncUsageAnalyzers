@@ -7,7 +7,7 @@ namespace AsyncUsageAnalyzers.Usage
     using System.Collections.Concurrent;
     using System.Collections.Immutable;
     using System.Threading;
-    using System.Threading.Tasks;
+    using Helpers;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.Diagnostics;
 
@@ -73,53 +73,27 @@ namespace AsyncUsageAnalyzers.Usage
                     return;
                 }
 
-                if (symbol.Locations.IsDefaultOrEmpty)
+                if (symbol.IsImplicitlyDeclared)
                 {
                     return;
                 }
 
-                if (symbol.IsOverride)
+                if (!symbol.IsInAnalyzedSource(this.generatedHeaderCache, context.CancellationToken))
                 {
                     return;
                 }
 
-                if (!symbol.ExplicitInterfaceImplementations.IsDefaultOrEmpty)
+                if (!symbol.HasAsyncSignature())
                 {
                     return;
                 }
 
-                Location location = symbol.Locations[0];
-                if (!location.IsInSource || location.SourceTree.IsGeneratedDocument(this.generatedHeaderCache, context.CancellationToken))
+                if (symbol.IsOverrideOrImplementation())
                 {
                     return;
                 }
 
-                // void-returning methods are not asynchronous according to their signature, even if they use `async`
-                if (symbol.ReturnsVoid)
-                {
-                    return;
-                }
-
-                if (!symbol.IsAsync)
-                {
-                    // This check conveniently covers Task and Task<T> by ignoring the `1 in Task<T>.
-                    if (!string.Equals(nameof(Task), symbol.ReturnType?.Name, StringComparison.Ordinal))
-                    {
-                        return;
-                    }
-
-                    if (!string.Equals(typeof(Task).Namespace, symbol.ReturnType?.ContainingNamespace?.ToString(), StringComparison.Ordinal))
-                    {
-                        return;
-                    }
-                }
-
-                if (symbol.MethodKind == MethodKind.PropertyGet || symbol.MethodKind == MethodKind.PropertySet)
-                {
-                    return;
-                }
-
-                if (IsTestMethod(symbol))
+                if (symbol.IsTestMethod())
                 {
                     return;
                 }
@@ -130,22 +104,6 @@ namespace AsyncUsageAnalyzers.Usage
                     if (this.cancellationTokenType.Equals(parameterType))
                     {
                         return;
-                    }
-                }
-
-                if ((symbol.ContainingType.TypeKind == TypeKind.Class || symbol.ContainingType.TypeKind == TypeKind.Struct)
-                    && symbol.DeclaredAccessibility == Accessibility.Public)
-                {
-                    // As a final check, make sure the method isn't implicitly implementing an interface method
-                    foreach (INamedTypeSymbol interfaceType in symbol.ContainingType.AllInterfaces)
-                    {
-                        foreach (var member in interfaceType.GetMembers(symbol.Name))
-                        {
-                            if (Equals(symbol.ContainingType.FindImplementationForInterfaceMember(member), symbol))
-                            {
-                                return;
-                            }
-                        }
                     }
                 }
 
@@ -177,28 +135,6 @@ namespace AsyncUsageAnalyzers.Usage
                 }
 
                 context.ReportDiagnostic(Diagnostic.Create(Descriptor, symbol.Locations[0], symbol.Name));
-            }
-
-            private static bool IsTestMethod(IMethodSymbol methodSymbol)
-            {
-                foreach (AttributeData attributeData in methodSymbol.GetAttributes())
-                {
-                    var attributeClass = attributeData.AttributeClass;
-                    if (attributeClass == null)
-                    {
-                        continue;
-                    }
-
-                    if (string.Equals(attributeClass.Name, "TestMethodAttribute", StringComparison.Ordinal)
-                        || string.Equals(attributeClass.Name, "FactAttribute", StringComparison.Ordinal)
-                        || string.Equals(attributeClass.Name, "TheoryAttribute", StringComparison.Ordinal)
-                        || string.Equals(attributeClass.Name, "TestAttribute", StringComparison.Ordinal))
-                    {
-                        return true;
-                    }
-                }
-
-                return false;
             }
         }
     }
