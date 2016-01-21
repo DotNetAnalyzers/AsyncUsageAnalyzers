@@ -30,6 +30,10 @@ To fix a violation of this rule, change the signature of the method to return a 
 ## How to suppress violations
 
 ```csharp
+[SuppressMessage("AsyncUsage.CSharp.Reliability", "AvoidAsyncVoid", Justification = "Reviewed.")]
+```
+
+```csharp
 #pragma warning disable AvoidAsyncVoid // Avoid async void
 private async void HandleSomeEvent(object sender, EventArgs e)
 #pragma warning restore AvoidAsyncVoid // Avoid async void

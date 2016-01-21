@@ -31,6 +31,10 @@ To fix a violation of this rule, rename the method to include the `Async` suffix
 ## How to suppress violations
 
 ```csharp
+[SuppressMessage("AsyncUsage.CSharp.Naming", "UseAsyncSuffix", Justification = "Reviewed.")]
+```
+
+```csharp
 #pragma warning disable UseAsyncSuffix // Use Async suffix
 public async Task<int> GetValue()
 #pragma warning restore UseAsyncSuffix // Use Async suffix

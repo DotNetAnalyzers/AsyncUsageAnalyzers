@@ -32,6 +32,10 @@ the asynchronous operation.
 ## How to suppress violations
 
 ```csharp
+[SuppressMessage("AsyncUsage.CSharp.Usage", "UseConfigureAwait", Justification = "Reviewed.")]
+```
+
+```csharp
 #pragma warning disable UseConfigureAwait // Use ConfigureAwait
 await Task.Delay(1000);
 #pragma warning restore UseConfigureAwait // Use ConfigureAwait
