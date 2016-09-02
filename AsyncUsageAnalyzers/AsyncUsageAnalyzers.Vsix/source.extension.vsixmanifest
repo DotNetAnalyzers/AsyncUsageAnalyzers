@@ -17,5 +17,7 @@
   <Assets>
     <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="AsyncUsageAnalyzers" Path="|AsyncUsageAnalyzers|"/>
     <Asset Type="Microsoft.VisualStudio.Analyzer" d:Source="Project" d:ProjectName="AsyncUsageAnalyzers" Path="|AsyncUsageAnalyzers|"/>
+    <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="AsyncUsageAnalyzers.CodeFixes" Path="|AsyncUsageAnalyzers.CodeFixes|" />
+    <Asset Type="Microsoft.VisualStudio.Analyzer" d:Source="Project" d:ProjectName="AsyncUsageAnalyzers.CodeFixes" Path="|AsyncUsageAnalyzers.CodeFixes|" />
   </Assets>
 </PackageManifest>
