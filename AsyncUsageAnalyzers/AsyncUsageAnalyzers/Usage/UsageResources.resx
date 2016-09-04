@@ -117,6 +117,27 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AsyncAnonymousFunctionsAndMethods" xml:space="preserve">
+    <value>Asynchronous anonymous functions and methods</value>
+  </data>
+  <data name="DontUseThreadSleepDescription" xml:space="preserve">
+    <value>Don't use Thread.Sleep() </value>
+  </data>
+  <data name="DontUseThreadSleepInAsyncCodeDescription" xml:space="preserve">
+    <value>Don't use Thread.Sleep() in a aync code</value>
+  </data>
+  <data name="DontUseThreadSleepInAsyncCodeMessageFormat" xml:space="preserve">
+    <value>{0} should not call Thread.Sleep()</value>
+  </data>
+  <data name="DontUseThreadSleepInAsyncCodeTitle" xml:space="preserve">
+    <value>Don't use Thread.Sleep() In async code</value>
+  </data>
+  <data name="DontUseThreadSleepMessageFormat" xml:space="preserve">
+    <value>Thread.Sleep() should not be used</value>
+  </data>
+  <data name="DontUseThreadSleepTitle" xml:space="preserve">
+    <value>Don't use Thread.Sleep()</value>
+  </data>
   <data name="IncludeCancellationParameterDescription" xml:space="preserve">
     <value>Asynchronous methods should include a CancellationToken parameter.</value>
   </data>
@@ -125,6 +146,12 @@
   </data>
   <data name="IncludeCancellationParameterTitle" xml:space="preserve">
     <value>Include CancellationToken parameter</value>
+  </data>
+  <data name="LambdaFunction" xml:space="preserve">
+    <value>lambda function</value>
+  </data>
+  <data name="MethodFormat" xml:space="preserve">
+    <value>Method '{0}'</value>
   </data>
   <data name="UseConfigureAwaitDescription" xml:space="preserve">
     <value>The continuation behavior for a Task should be configured by calling ConfigureAwait prior to awaiting the task.</value>

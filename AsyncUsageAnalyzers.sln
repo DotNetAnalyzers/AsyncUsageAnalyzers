@@ -32,6 +32,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "documentation", "documentat
 	ProjectSection(SolutionItems) = preProject
 		documentation\AvoidAsyncSuffix.md = documentation\AvoidAsyncSuffix.md
 		documentation\AvoidAsyncVoid.md = documentation\AvoidAsyncVoid.md
+		DontUseThreadSleep.md = DontUseThreadSleep.md
+		DontUseThreadSleepInAsyncCode.md = DontUseThreadSleepInAsyncCode.md
 		documentation\UseAsyncSuffix.md = documentation\UseAsyncSuffix.md
 		documentation\UseConfigureAwait.md = documentation\UseConfigureAwait.md
 	EndProjectSection

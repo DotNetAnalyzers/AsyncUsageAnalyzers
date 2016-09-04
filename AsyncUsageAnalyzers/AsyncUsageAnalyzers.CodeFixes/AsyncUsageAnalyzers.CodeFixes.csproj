@@ -51,6 +51,7 @@
     <Compile Include="Naming\AvoidAsyncSuffixCodeFixProvider.cs" />
     <Compile Include="Naming\UseAsyncSuffixCodeFixProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Usage\DontUseThreadSleepCodeUniversalCodeFixProvider.cs" />
     <Compile Include="Usage\UseConfigureAwaitCodeFixProvider.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -55,6 +55,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>HelpersResources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\InvocationExpressionSyntaxExtensions.cs" />
     <Compile Include="Helpers\MethodSymbolExtensions.cs" />
     <Compile Include="Helpers\SpecializedTasks.cs" />
     <Compile Include="Helpers\SymbolExtensions.cs" />
@@ -79,13 +80,16 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Usage\DontUseThreadSleepAnalyzer.cs" />
+    <Compile Include="Usage\DontUseThreadSleepAnalyzerBase.cs" />
+    <Compile Include="Usage\DontUseThreadSleepInAsyncCodeAnalyzer.cs" />
     <Compile Include="Usage\IncludeCancellationParameterAnalyzer.cs" />
+    <Compile Include="Usage\UseConfigureAwaitAnalyzer.cs" />
     <Compile Include="Usage\UsageResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>UsageResources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Usage\UseConfigureAwaitAnalyzer.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Helpers\HelpersResources.resx">

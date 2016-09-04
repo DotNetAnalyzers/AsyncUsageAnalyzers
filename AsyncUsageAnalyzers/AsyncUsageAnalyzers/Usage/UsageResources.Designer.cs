@@ -62,6 +62,69 @@ namespace AsyncUsageAnalyzers.Usage {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Asynchronous anonymous functions and methods.
+        /// </summary>
+        internal static string AsyncAnonymousFunctionsAndMethods {
+            get {
+                return ResourceManager.GetString("AsyncAnonymousFunctionsAndMethods", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Don&apos;t use Thread.Sleep() .
+        /// </summary>
+        internal static string DontUseThreadSleepDescription {
+            get {
+                return ResourceManager.GetString("DontUseThreadSleepDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Don&apos;t use Thread.Sleep() in a aync code.
+        /// </summary>
+        internal static string DontUseThreadSleepInAsyncCodeDescription {
+            get {
+                return ResourceManager.GetString("DontUseThreadSleepInAsyncCodeDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} should not call Thread.Sleep().
+        /// </summary>
+        internal static string DontUseThreadSleepInAsyncCodeMessageFormat {
+            get {
+                return ResourceManager.GetString("DontUseThreadSleepInAsyncCodeMessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Don&apos;t use Thread.Sleep() In async code.
+        /// </summary>
+        internal static string DontUseThreadSleepInAsyncCodeTitle {
+            get {
+                return ResourceManager.GetString("DontUseThreadSleepInAsyncCodeTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Thread.Sleep() should not be used.
+        /// </summary>
+        internal static string DontUseThreadSleepMessageFormat {
+            get {
+                return ResourceManager.GetString("DontUseThreadSleepMessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Don&apos;t use Thread.Sleep().
+        /// </summary>
+        internal static string DontUseThreadSleepTitle {
+            get {
+                return ResourceManager.GetString("DontUseThreadSleepTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Asynchronous methods should include a CancellationToken parameter..
         /// </summary>
         internal static string IncludeCancellationParameterDescription {
@@ -85,6 +148,24 @@ namespace AsyncUsageAnalyzers.Usage {
         internal static string IncludeCancellationParameterTitle {
             get {
                 return ResourceManager.GetString("IncludeCancellationParameterTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to lambda function.
+        /// </summary>
+        internal static string LambdaFunction {
+            get {
+                return ResourceManager.GetString("LambdaFunction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Method &apos;{0}&apos;.
+        /// </summary>
+        internal static string MethodFormat {
+            get {
+                return ResourceManager.GetString("MethodFormat", resourceCulture);
             }
         }
         
