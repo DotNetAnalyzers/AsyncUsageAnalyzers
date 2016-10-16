@@ -80,6 +80,62 @@ class ClassA
         }
 
         [Fact]
+        public async Task TestThreadSleepZeroInAsyncMethodAsync()
+        {
+            var testCode = @"
+using System.Threading;
+using System.Threading.Tasks;
+using static System.Threading.Thread;
+
+class ClassA
+{
+    public async Task<int> MethodAsync()
+    {
+        Sleep(0);
+        Thread.Sleep(0);
+        System.Threading.Thread.Sleep(0);
+        global::System.Threading.Thread.Sleep(0);
+        
+        return await Task.FromResult(0); 
+    }
+}";
+            var fixedCode = @"
+using System.Threading;
+using System.Threading.Tasks;
+using static System.Threading.Thread;
+
+class ClassA
+{
+    public async Task<int> MethodAsync()
+    {
+        await System.Threading.Tasks.Task.Yield();
+        await System.Threading.Tasks.Task.Yield();
+        await System.Threading.Tasks.Task.Yield();
+        await System.Threading.Tasks.Task.Yield();
+        
+        return await Task.FromResult(0); 
+    }
+}";
+            var expectedResults = new[]
+                {
+                    this.CSharpDiagnostic().WithLocation(10, 9),
+                    this.CSharpDiagnostic().WithLocation(11, 9),
+                    this.CSharpDiagnostic().WithLocation(12, 9),
+                    this.CSharpDiagnostic().WithLocation(13, 9)
+                }
+                .Select(diag => this.OptionallyAddArgumentsToDiagnostic(diag, string.Format(UsageResources.MethodFormat, "MethodAsync")))
+                .ToArray();
+
+            await this.VerifyCSharpDiagnosticAsync(testCode, expectedResults, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpFixAllFixAsync(
+                    testCode,
+                    fixedCode,
+                    cancellationToken: CancellationToken.None,
+                    allowNewCompilerDiagnostics: true /* expected new diagnostic is "hidden CS8019: Unnecessary using directive." */)
+                .ConfigureAwait(false);
+        }
+
+        [Fact]
         public async Task TestThreadSleepInAsyncAnonymousFunctionAsync()
         {
             var testCode = @"
@@ -94,7 +150,7 @@ class ClassA
         Func<Task> testFunc = async () =>
         {
             Thread.Sleep(1);
-            await Task.FromResult(1);
+            await Task.FromResult(0);
         };
     }
 }";
@@ -111,7 +167,54 @@ class ClassA
         Func<Task> testFunc = async () =>
         {
             await System.Threading.Tasks.Task.Delay(1);
-            await Task.FromResult(1);
+            await Task.FromResult(0);
+        };
+    }
+}";
+            var expected = this.OptionallyAddArgumentsToDiagnostic(this.CSharpDiagnostic().WithLocation(12, 13), UsageResources.AsyncAnonymousFunctionsAndMethods);
+
+            await this.VerifyCSharpDiagnosticAsync(testCode, expected, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpFixAllFixAsync(
+                    testCode,
+                    fixedCode,
+                    cancellationToken: CancellationToken.None,
+                    allowNewCompilerDiagnostics: true /* expected new diagnostic is "hidden CS8019: Unnecessary using directive." */)
+                .ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task TestThreadSleepZeroInAsyncAnonymousFunctionAsync()
+        {
+            var testCode = @"
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+class ClassA
+{
+    public void MethodA()
+    {
+        Func<Task> testFunc = async () =>
+        {
+            Thread.Sleep(0);
+            await Task.FromResult(0);
+        };
+    }
+}";
+
+            var fixedCode = @"
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+class ClassA
+{
+    public void MethodA()
+    {
+        Func<Task> testFunc = async () =>
+        {
+            await System.Threading.Tasks.Task.Yield();
+            await Task.FromResult(0);
         };
     }
 }";
@@ -139,6 +242,48 @@ class ClassA
     public delegate Task<int> SampleDelegate();
     SampleDelegate AsyncAnonymousMethod = async delegate ()
     {
+        Thread.Sleep(1);
+        return await Task.FromResult(0);
+    };
+}";
+            var fixedCode = @"
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+class ClassA
+{
+    public delegate Task<int> SampleDelegate();
+    SampleDelegate AsyncAnonymousMethod = async delegate ()
+    {
+        await System.Threading.Tasks.Task.Delay(1);
+        return await Task.FromResult(0);
+    };
+}";
+            var result = this.OptionallyAddArgumentsToDiagnostic(this.CSharpDiagnostic().WithLocation(11, 9), UsageResources.AsyncAnonymousFunctionsAndMethods);
+
+            await this.VerifyCSharpDiagnosticAsync(testCode, result, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpFixAllFixAsync(
+                    testCode,
+                    fixedCode,
+                    cancellationToken: CancellationToken.None,
+                    allowNewCompilerDiagnostics: true /* expected new diagnostic is "hidden CS8019: Unnecessary using directive." */)
+                .ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task TestThreadSleepZeroInAsyncAnonymousMethodAsync()
+        {
+            var testCode = @"
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+class ClassA
+{
+    public delegate Task<int> SampleDelegate();
+    SampleDelegate AsyncAnonymousMethod = async delegate ()
+    {
         Thread.Sleep(0);
         return await Task.FromResult(0);
     };
@@ -153,7 +298,7 @@ class ClassA
     public delegate Task<int> SampleDelegate();
     SampleDelegate AsyncAnonymousMethod = async delegate ()
     {
-        await System.Threading.Tasks.Task.Delay(0);
+        await System.Threading.Tasks.Task.Yield();
         return await Task.FromResult(0);
     };
 }";
@@ -179,8 +324,27 @@ class ClassA
 {
     public async Task<int> Method1Async()
     {
-        await Task.Delay(1000);
-        return await Task.FromResult(0); 
+        await Task.Delay(1);
+        return await Task.FromResult(0);
+    }
+}";
+
+            await this.VerifyCSharpDiagnosticAsync(testCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task TestUsingTaskYieldIsOKAsync()
+        {
+            var testCode = @"
+using System.Threading.Tasks;
+using System.Threading;
+
+class ClassA
+{
+    public async Task<int> Method1Async()
+    {
+        await Task.Delay(1);
+        return await Task.FromResult(0);
     }
 }";
 
