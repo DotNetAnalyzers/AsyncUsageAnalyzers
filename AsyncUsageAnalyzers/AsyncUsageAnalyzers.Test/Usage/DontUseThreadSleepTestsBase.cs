@@ -79,26 +79,29 @@ class ClassA
                 .ConfigureAwait(false);
         }
 
-        [Fact]
-        public async Task TestThreadSleepZeroInAsyncMethodAsync()
+        [Theory]
+        [InlineData("0")]
+        [InlineData("0 /* some inline comment */")]
+        [InlineData("(int)0L")]
+        public async Task TestThreadSleepZeroInAsyncMethodAsync(string zeroParams)
         {
-            var testCode = @"
+            var testCode = $@"
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Threading.Thread;
 
 class ClassA
-{
+{{
     public async Task<int> MethodAsync()
-    {
-        Sleep(0);
-        Thread.Sleep(0);
-        System.Threading.Thread.Sleep(0);
-        global::System.Threading.Thread.Sleep(0);
+    {{
+        Sleep({zeroParams});
+        Thread.Sleep({zeroParams});
+        System.Threading.Thread.Sleep({zeroParams});
+        global::System.Threading.Thread.Sleep({zeroParams});
         
         return await Task.FromResult(0); 
-    }
-}";
+    }}
+}}";
             var fixedCode = @"
 using System.Threading;
 using System.Threading.Tasks;
@@ -182,25 +185,28 @@ class ClassA
                 .ConfigureAwait(false);
         }
 
-        [Fact]
-        public async Task TestThreadSleepZeroInAsyncAnonymousFunctionAsync()
+        [Theory]
+        [InlineData("0")]
+        [InlineData("0 /* some inline comment */")]
+        [InlineData("(int)0L")]
+        public async Task TestThreadSleepZeroInAsyncAnonymousFunctionAsync(string zeroParams)
         {
-            var testCode = @"
+            var testCode = $@"
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 
 class ClassA
-{
+{{
     public void MethodA()
-    {
+    {{
         Func<Task> testFunc = async () =>
-        {
-            Thread.Sleep(0);
+        {{
+            Thread.Sleep({zeroParams});
             await Task.FromResult(0);
-        };
-    }
-}";
+        }};
+    }}
+}}";
 
             var fixedCode = @"
 using System;
@@ -271,23 +277,26 @@ class ClassA
                 .ConfigureAwait(false);
         }
 
-        [Fact]
-        public async Task TestThreadSleepZeroInAsyncAnonymousMethodAsync()
+        [Theory]
+        [InlineData("0")]
+        [InlineData("0 /* some inline comment */")]
+        [InlineData("(int)0L")]
+        public async Task TestThreadSleepZeroInAsyncAnonymousMethodAsync(string zeroParams)
         {
-            var testCode = @"
+            var testCode = $@"
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 
 class ClassA
-{
+{{
     public delegate Task<int> SampleDelegate();
     SampleDelegate AsyncAnonymousMethod = async delegate ()
-    {
-        Thread.Sleep(0);
+    {{
+        Thread.Sleep({zeroParams});
         return await Task.FromResult(0);
-    };
-}";
+    }};
+}}";
             var fixedCode = @"
 using System;
 using System.Threading;
