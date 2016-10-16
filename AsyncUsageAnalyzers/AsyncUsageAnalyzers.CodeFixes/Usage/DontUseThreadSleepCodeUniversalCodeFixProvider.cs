@@ -65,7 +65,7 @@ namespace AsyncUsageAnalyzers.Usage
         {
             context.RegisterCodeFix(
                 CodeAction.Create(
-                    "Use await System.Threading.Tasks.Task.Delay(...)",
+                    "Use `await Task.Delay(...)` or `await Task.Yield()`",
                     cancellationToken => GetTransformedDocumentAsync(context.Document, diagnostic, cancellationToken)),
                 diagnostic);
         }
