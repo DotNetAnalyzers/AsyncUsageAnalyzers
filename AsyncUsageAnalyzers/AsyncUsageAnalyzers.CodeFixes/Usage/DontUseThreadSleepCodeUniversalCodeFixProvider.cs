@@ -82,11 +82,28 @@ namespace AsyncUsageAnalyzers.Usage
 
             var arguments = expression.ArgumentList;
 
-            var newExpression = GenerateTaskDelayExpression(arguments);
+            var newExpression = IsArgumentListWithZeroValue(arguments)
+                ? GenerateTaskYieldExpression()
+                : GenerateTaskDelayExpression(arguments);
 
             SyntaxNode newRoot = root.ReplaceNode(expression, newExpression.WithTriviaFrom(expression));
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;
+        }
+
+        private static bool IsArgumentListWithZeroValue(ArgumentListSyntax argumentListSyntax)
+        {
+            if (argumentListSyntax.Arguments.Count != 1)
+            {
+                return false;
+            }
+
+            if (argumentListSyntax.Arguments.First().ToString().Trim() == "0")
+            {
+                return true;
+            }
+
+            return false;
         }
 
         private static AwaitExpressionSyntax GenerateTaskDelayExpression(ArgumentListSyntax methodArgumentList) =>
@@ -106,5 +123,22 @@ namespace AsyncUsageAnalyzers.Usage
                             SyntaxFactory.IdentifierName("Task")),
                         SyntaxFactory.IdentifierName("Delay")))
                     .WithArgumentList(methodArgumentList));
+
+        private static AwaitExpressionSyntax GenerateTaskYieldExpression() =>
+            SyntaxFactory.AwaitExpression(
+                SyntaxFactory.InvocationExpression(
+                    SyntaxFactory.MemberAccessExpression(
+                        SyntaxKind.SimpleMemberAccessExpression,
+                        SyntaxFactory.MemberAccessExpression(
+                            SyntaxKind.SimpleMemberAccessExpression,
+                            SyntaxFactory.MemberAccessExpression(
+                                SyntaxKind.SimpleMemberAccessExpression,
+                                SyntaxFactory.MemberAccessExpression(
+                                    SyntaxKind.SimpleMemberAccessExpression,
+                                    SyntaxFactory.IdentifierName("System"),
+                                    SyntaxFactory.IdentifierName("Threading")),
+                                SyntaxFactory.IdentifierName("Tasks")),
+                            SyntaxFactory.IdentifierName("Task")),
+                        SyntaxFactory.IdentifierName("Yield"))));
     }
 }
