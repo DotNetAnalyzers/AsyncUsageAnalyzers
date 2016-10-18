@@ -50,12 +50,12 @@
     <Compile Include="AnalyzerExtensions.cs" />
     <Compile Include="ExcludeFromCodeCoverageAttribute.cs" />
     <Compile Include="GeneratedCodeAnalysisExtensions.cs" />
+    <Compile Include="Helpers\ExpressionSyntaxExtensions.cs" />
     <Compile Include="Helpers\HelpersResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>HelpersResources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Helpers\InvocationExpressionSyntaxExtensions.cs" />
     <Compile Include="Helpers\MethodSymbolExtensions.cs" />
     <Compile Include="Helpers\SpecializedTasks.cs" />
     <Compile Include="Helpers\SymbolExtensions.cs" />
