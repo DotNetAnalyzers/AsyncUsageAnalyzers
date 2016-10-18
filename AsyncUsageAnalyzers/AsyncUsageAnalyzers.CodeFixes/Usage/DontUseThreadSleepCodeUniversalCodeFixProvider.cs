@@ -82,7 +82,7 @@ namespace AsyncUsageAnalyzers.Usage
 
             var arguments = expression.ArgumentList;
 
-            var newExpression = IsArgumentListWithZeroValue(arguments)
+            var newExpression = await IsArgumentListWithZeroValueAsync(document, arguments).ConfigureAwait(true)
                 ? GenerateTaskYieldExpression()
                 : GenerateTaskDelayExpression(arguments);
 
@@ -91,14 +91,25 @@ namespace AsyncUsageAnalyzers.Usage
             return newDocument;
         }
 
-        private static bool IsArgumentListWithZeroValue(ArgumentListSyntax argumentListSyntax)
+        private static async Task<bool> IsArgumentListWithZeroValueAsync(Document document, ArgumentListSyntax argumentListSyntax)
         {
+            // all valid overloads of Thread.Sleep() method take exactly one argument
             if (argumentListSyntax.Arguments.Count != 1)
             {
                 return false;
             }
 
-            if (argumentListSyntax.Arguments.First().ToString().Trim() == "0")
+            var argumentExpression = argumentListSyntax.Arguments.First().Expression;
+
+            var argumentString = argumentExpression.ToString().Trim();
+            if (argumentString == "0")
+            {
+                return true;
+            }
+
+            var semanticModel = await document.GetSemanticModelAsync().ConfigureAwait(false);
+            var optionalValue = semanticModel.GetConstantValue(argumentExpression);
+            if (optionalValue.HasValue && optionalValue.Value.Equals(0))
             {
                 return true;
             }
