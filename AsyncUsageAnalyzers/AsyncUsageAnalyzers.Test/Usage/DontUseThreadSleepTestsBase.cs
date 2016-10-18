@@ -83,6 +83,7 @@ class ClassA
         [InlineData("0")]
         [InlineData("0 /* some inline comment */")]
         [InlineData("(int)0L")]
+        [InlineData("1-1")]
         public async Task TestThreadSleepZeroInAsyncMethodAsync(string zeroParams)
         {
             var testCode = $@"
@@ -189,6 +190,7 @@ class ClassA
         [InlineData("0")]
         [InlineData("0 /* some inline comment */")]
         [InlineData("(int)0L")]
+        [InlineData("1-1")]
         public async Task TestThreadSleepZeroInAsyncAnonymousFunctionAsync(string zeroParams)
         {
             var testCode = $@"
@@ -281,6 +283,7 @@ class ClassA
         [InlineData("0")]
         [InlineData("0 /* some inline comment */")]
         [InlineData("(int)0L")]
+        [InlineData("1-1")]
         public async Task TestThreadSleepZeroInAsyncAnonymousMethodAsync(string zeroParams)
         {
             var testCode = $@"
