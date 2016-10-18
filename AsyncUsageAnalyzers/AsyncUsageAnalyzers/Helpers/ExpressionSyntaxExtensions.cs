@@ -26,17 +26,7 @@ namespace AsyncUsageAnalyzers.Helpers
             }
 
             var typeMetadata = semanticModel.Compilation.GetTypeByMetadataName(fullyQualifiedName);
-            if (!typeMetadata.Equals(methodSymbol.ReceiverType))
-            {
-                return false;
-            }
-
-            if (methodSymbol.Name != methodName)
-            {
-                return false;
-            }
-
-            return true;
+            return typeMetadata.Equals(methodSymbol.ReceiverType) && (methodSymbol.Name == methodName);
         }
 
         public static bool IsInsideAsyncCode(this ExpressionSyntax invocationExpression, ref SyntaxNode enclosingMethodOrFunctionDeclaration)
