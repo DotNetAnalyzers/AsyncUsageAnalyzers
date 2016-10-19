@@ -35,6 +35,9 @@ namespace AsyncUsageAnalyzers.Usage
 
         protected override AnalyzerBase GetAnalyzer() => new Analyzer();
 
+        private static string GetMethodText(string methodName) =>
+            string.Format(UsageResources.MethodFormat, methodName);
+
         private sealed class Analyzer : DontUseThreadSleepAnalyzerBase.AnalyzerBase
         {
             protected override void ReportDiagnosticOnThreadSleepInvocation(SyntaxNodeAnalysisContext context, InvocationExpressionSyntax invocationExpression)
@@ -56,8 +59,5 @@ namespace AsyncUsageAnalyzers.Usage
                 }
             }
         }
-
-        private static string GetMethodText(string methodName) =>
-            string.Format(UsageResources.MethodFormat, methodName);
     }
 }
