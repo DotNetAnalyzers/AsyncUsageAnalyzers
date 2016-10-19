@@ -29,6 +29,23 @@ namespace AsyncUsageAnalyzers.Helpers
             return typeMetadata.Equals(methodSymbol.ReceiverType) && (methodSymbol.Name == methodName);
         }
 
+        public static bool TryGetFieldSymbolByTypeNameAndMethodName(
+            this ExpressionSyntax invocationExpression,
+            SemanticModel semanticModel,
+            string fullyQualifiedName,
+            string propertyName,
+            out IFieldSymbol propertySymbol)
+        {
+            propertySymbol = ModelExtensions.GetSymbolInfo(semanticModel, invocationExpression).Symbol as IFieldSymbol;
+            if (propertySymbol == null)
+            {
+                return false;
+            }
+
+            var typeMetadata = semanticModel.Compilation.GetTypeByMetadataName(fullyQualifiedName);
+            return typeMetadata.Equals(propertySymbol.ContainingType) && (propertySymbol.Name == propertyName);
+        }
+
         public static bool IsInsideAsyncCode(this ExpressionSyntax invocationExpression, ref SyntaxNode enclosingMethodOrFunctionDeclaration)
         {
             foreach (var syntaxNode in invocationExpression.Ancestors())

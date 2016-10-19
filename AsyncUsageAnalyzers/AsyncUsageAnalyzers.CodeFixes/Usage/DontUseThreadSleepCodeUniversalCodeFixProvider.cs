@@ -102,7 +102,7 @@ namespace AsyncUsageAnalyzers.Usage
             var argumentExpression = argumentListSyntax.Arguments.First().Expression;
 
             var argumentString = argumentExpression.ToString().Trim();
-            if (argumentString == "0")
+            if (argumentString == "0" || argumentString == "TimeSpan.Zero")
             {
                 return true;
             }
@@ -112,6 +112,13 @@ namespace AsyncUsageAnalyzers.Usage
             if (optionalValue.HasValue && optionalValue.Value.Equals(0))
             {
                 return true;
+            }
+
+            var memberAccessExpression = argumentExpression as MemberAccessExpressionSyntax;
+            if (memberAccessExpression != null)
+            {
+                IFieldSymbol propertySymbol = null;
+                return memberAccessExpression.TryGetFieldSymbolByTypeNameAndMethodName(semanticModel, "System.TimeSpan", "Zero", out propertySymbol);
             }
 
             return false;

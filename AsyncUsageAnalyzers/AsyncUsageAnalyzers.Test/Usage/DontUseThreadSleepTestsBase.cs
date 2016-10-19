@@ -84,9 +84,12 @@ class ClassA
         [InlineData("0 /* some inline comment */")]
         [InlineData("(int)0L")]
         [InlineData("1-1")]
+        [InlineData("TimeSpan.Zero")]
+        [InlineData("System.TimeSpan.Zero")]
         public async Task TestThreadSleepZeroInAsyncMethodAsync(string zeroParams)
         {
             var testCode = $@"
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Threading.Thread;
@@ -104,6 +107,7 @@ class ClassA
     }}
 }}";
             var fixedCode = @"
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Threading.Thread;
@@ -122,10 +126,10 @@ class ClassA
 }";
             var expectedResults = new[]
                 {
-                    this.CSharpDiagnostic().WithLocation(10, 9),
                     this.CSharpDiagnostic().WithLocation(11, 9),
                     this.CSharpDiagnostic().WithLocation(12, 9),
-                    this.CSharpDiagnostic().WithLocation(13, 9)
+                    this.CSharpDiagnostic().WithLocation(13, 9),
+                    this.CSharpDiagnostic().WithLocation(14, 9)
                 }
                 .Select(diag => this.OptionallyAddArgumentsToDiagnostic(diag, string.Format(UsageResources.MethodFormat, "MethodAsync")))
                 .ToArray();
@@ -191,6 +195,8 @@ class ClassA
         [InlineData("0 /* some inline comment */")]
         [InlineData("(int)0L")]
         [InlineData("1-1")]
+        [InlineData("TimeSpan.Zero")]
+        [InlineData("System.TimeSpan.Zero")]
         public async Task TestThreadSleepZeroInAsyncAnonymousFunctionAsync(string zeroParams)
         {
             var testCode = $@"
@@ -284,6 +290,8 @@ class ClassA
         [InlineData("0 /* some inline comment */")]
         [InlineData("(int)0L")]
         [InlineData("1-1")]
+        [InlineData("TimeSpan.Zero")]
+        [InlineData("System.TimeSpan.Zero")]
         public async Task TestThreadSleepZeroInAsyncAnonymousMethodAsync(string zeroParams)
         {
             var testCode = $@"
