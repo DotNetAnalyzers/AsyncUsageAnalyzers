@@ -16,7 +16,7 @@ namespace AsyncUsageAnalyzers.Usage
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Text;
 
-    [ExportCodeFixProvider(LanguageNames.CSharp, LanguageNames.VisualBasic, Name = nameof(DontUseThreadSleepCodeUniversalCodeFixProvider))]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(DontUseThreadSleepCodeUniversalCodeFixProvider))]
     [Shared]
     internal class DontUseThreadSleepCodeUniversalCodeFixProvider : CodeFixProvider
     {
