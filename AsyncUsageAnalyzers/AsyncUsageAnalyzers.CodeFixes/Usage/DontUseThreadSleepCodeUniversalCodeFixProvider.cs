@@ -37,7 +37,7 @@ namespace AsyncUsageAnalyzers.Usage
             {
                 if (diagnostic.Id == DontUseThreadSleepInAsyncCodeAnalyzer.DiagnosticId)
                 {
-                    RegisterCodeFixForDiagnosic(context, diagnostic);
+                    RegisterCodeFixForDiagnostic(context, diagnostic);
                 }
                 else if (diagnostic.Id == DontUseThreadSleepAnalyzer.DiagnosticId)
                 {
@@ -53,13 +53,13 @@ namespace AsyncUsageAnalyzers.Usage
 
                     if (invocationExpression.IsInsideAsyncCode())
                     {
-                        RegisterCodeFixForDiagnosic(context, diagnostic);
+                        RegisterCodeFixForDiagnostic(context, diagnostic);
                     }
                 }
             }
         }
 
-        private static void RegisterCodeFixForDiagnosic(CodeFixContext context, Diagnostic diagnostic)
+        private static void RegisterCodeFixForDiagnostic(CodeFixContext context, Diagnostic diagnostic)
         {
             context.RegisterCodeFix(
                 CodeAction.Create(
