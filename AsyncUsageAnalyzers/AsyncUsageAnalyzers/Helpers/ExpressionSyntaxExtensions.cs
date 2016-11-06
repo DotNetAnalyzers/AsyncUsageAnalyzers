@@ -17,14 +17,19 @@ namespace AsyncUsageAnalyzers.Helpers
             string methodName,
             out IMethodSymbol methodSymbol)
         {
-            methodSymbol = ModelExtensions.GetSymbolInfo(semanticModel, invocationExpression).Symbol as IMethodSymbol;
-            if (methodSymbol == null)
+            var methodSymbolCandidate = ModelExtensions.GetSymbolInfo(semanticModel, invocationExpression).Symbol as IMethodSymbol;
+            if (methodSymbolCandidate != null)
             {
-                return false;
+                var typeMetadata = semanticModel.Compilation.GetTypeByMetadataName(fullyQualifiedName);
+                if (typeMetadata.Equals(methodSymbolCandidate.ReceiverType) && (methodSymbolCandidate.Name == methodName))
+                {
+                    methodSymbol = methodSymbolCandidate;
+                    return true;
+                }
             }
 
-            var typeMetadata = semanticModel.Compilation.GetTypeByMetadataName(fullyQualifiedName);
-            return typeMetadata.Equals(methodSymbol.ReceiverType) && (methodSymbol.Name == methodName);
+            methodSymbol = null;
+            return false;
         }
 
         public static bool TryGetFieldSymbolByTypeNameAndMethodName(
@@ -34,14 +39,19 @@ namespace AsyncUsageAnalyzers.Helpers
             string propertyName,
             out IFieldSymbol propertySymbol)
         {
-            propertySymbol = ModelExtensions.GetSymbolInfo(semanticModel, invocationExpression).Symbol as IFieldSymbol;
-            if (propertySymbol == null)
+            var propertySymbolCandidate = ModelExtensions.GetSymbolInfo(semanticModel, invocationExpression).Symbol as IFieldSymbol;
+            if (propertySymbolCandidate != null)
             {
-                return false;
+                var typeMetadata = semanticModel.Compilation.GetTypeByMetadataName(fullyQualifiedName);
+                if (typeMetadata.Equals(propertySymbolCandidate.ContainingType) && (propertySymbolCandidate.Name == propertyName))
+                {
+                    propertySymbol = propertySymbolCandidate;
+                    return true;
+                }
             }
 
-            var typeMetadata = semanticModel.Compilation.GetTypeByMetadataName(fullyQualifiedName);
-            return typeMetadata.Equals(propertySymbol.ContainingType) && (propertySymbol.Name == propertyName);
+            propertySymbol = null;
+            return false;
         }
 
         public static bool IsInsideAsyncCode(this ExpressionSyntax invocationExpression, ref SyntaxNode enclosingMethodOrFunctionDeclaration)
