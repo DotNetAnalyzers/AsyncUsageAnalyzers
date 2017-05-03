@@ -7,3 +7,9 @@
 [![codecov.io](https://codecov.io/github/DotNetAnalyzers/AsyncUsageAnalyzers/coverage.svg?branch=master)](https://codecov.io/github/DotNetAnalyzers/AsyncUsageAnalyzers?branch=master)
 
 This repository contains analyzers for best practices related to asynchronous programming. Where possible, code fixes are also provided to simplify the process of correcting violations.
+
+[Available on NuGet](https://www.nuget.org/packages/AsyncUsageAnalyzers/1.0.0-alpha003)
+
+```
+Install-Package AsyncUsageAnalyzers -Pre
+```
