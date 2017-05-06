@@ -34,6 +34,7 @@ There are cases when using Thread.Sleep() method is valid.
 
 Thrad.Sleep with non-zero argument in async code can be replaced with "await System.Threading.Tasks.Task.Delay(...)"; Thread.Sleep(0) in async code can be replaced with "await System.Threading.Tasks.Yield()".
 If Thread.Sleep is used to run actions periodically, consider using timer or appropriate observable instead.
+
 If you are sure that using Thread.Sleep() is valid, suppress violations as described below.
 Alternatively, you may opt-out of this rule.
 
