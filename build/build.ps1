@@ -1,9 +1,10 @@
 param (
 	[switch]$Debug,
-	[string]$VisualStudioVersion = '14.0',
+	[string]$VisualStudioVersion = '15.0',
 	[switch]$SkipKeyCheck,
-	[string]$Verbosity = 'normal',
-	[string]$Logger
+	[string]$Verbosity = 'minimal',
+	[string]$Logger,
+	[switch]$Incremental
 )
 
 # build the solution
@@ -45,7 +46,12 @@ If (-not (Test-Path $nuget)) {
 }
 
 # build the main project
-$msbuild = "${env:ProgramFiles(x86)}\MSBuild\$VisualStudioVersion\Bin\MSBuild.exe"
+$visualStudio = (Get-ItemProperty 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\VisualStudio\SxS\VS7')."$VisualStudioVersion"
+$msbuild = "$visualStudio\MSBuild\$VisualStudioVersion\Bin\MSBuild.exe"
+If (-not (Test-Path $msbuild)) {
+	$host.UI.WriteErrorLine("Couldn't find MSBuild.exe")
+	exit 1
+}
 
 # Attempt to restore packages up to 3 times, to improve resiliency to connection timeouts and access denied errors.
 $maxAttempts = 3
@@ -63,10 +69,21 @@ If ($Logger) {
 	$LoggerArgument = "/logger:$Logger"
 }
 
-&$msbuild '/nologo' '/m' '/nr:false' '/t:rebuild' $LoggerArgument "/verbosity:$Verbosity" "/p:Configuration=$BuildConfig" "/p:VisualStudioVersion=$VisualStudioVersion" "/p:KeyConfiguration=$KeyConfiguration" $SolutionPath
+If ($Incremental) {
+	$Target = 'build'
+} Else {
+	$Target = 'rebuild'
+}
+
+&$msbuild '/nologo' '/m' '/nr:false' "/t:$Target" $LoggerArgument "/verbosity:$Verbosity" "/p:Configuration=$BuildConfig" "/p:VisualStudioVersion=$VisualStudioVersion" "/p:KeyConfiguration=$KeyConfiguration" $SolutionPath
 If (-not $?) {
 	$host.ui.WriteErrorLine('Build failed, aborting!')
 	exit $LASTEXITCODE
+}
+
+if ($Incremental) {
+	# Skip NuGet validation and copying packages to the output directory
+	exit 0
 }
 
 # By default, do not create a NuGet package unless the expected strong name key files were used
