@@ -4,9 +4,7 @@
 namespace AsyncUsageAnalyzers.Naming
 {
     using System;
-    using System.Collections.Concurrent;
     using System.Collections.Immutable;
-    using System.Threading.Tasks;
     using AsyncUsageAnalyzers.Helpers;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.Diagnostics;
@@ -31,7 +29,7 @@ namespace AsyncUsageAnalyzers.Naming
         private static readonly DiagnosticDescriptor Descriptor =
             new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, AnalyzerConstants.EnabledByDefault, Description, HelpLink);
 
-        private static readonly Action<CompilationStartAnalysisContext> CompilationStartAction = HandleCompilationStart;
+        private static readonly Action<SymbolAnalysisContext> MethodDeclarationAction = HandleMethodDeclaration;
 
         /// <inheritdoc/>
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } =
@@ -40,49 +38,30 @@ namespace AsyncUsageAnalyzers.Naming
         /// <inheritdoc/>
         public override void Initialize(AnalysisContext context)
         {
-            context.RegisterCompilationStartAction(CompilationStartAction);
+            context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
+
+            context.RegisterSymbolAction(MethodDeclarationAction, SymbolKind.Method);
         }
 
-        private static void HandleCompilationStart(CompilationStartAnalysisContext context)
+        private static void HandleMethodDeclaration(SymbolAnalysisContext context)
         {
-            Analyzer analyzer = new Analyzer(context.Compilation.GetOrCreateGeneratedDocumentCache());
-            context.RegisterSymbolAction(analyzer.HandleMethodDeclaration, SymbolKind.Method);
-        }
-
-        private sealed class Analyzer
-        {
-            private readonly ConcurrentDictionary<SyntaxTree, bool> generatedHeaderCache;
-
-            public Analyzer(ConcurrentDictionary<SyntaxTree, bool> generatedHeaderCache)
+            IMethodSymbol symbol = (IMethodSymbol)context.Symbol;
+            if (!symbol.Name.EndsWith("Async", StringComparison.Ordinal))
             {
-                this.generatedHeaderCache = generatedHeaderCache;
+                return;
             }
 
-            public void HandleMethodDeclaration(SymbolAnalysisContext context)
+            if (symbol.HasAsyncSignature(treatAsyncVoidAsAsync: true))
             {
-                IMethodSymbol symbol = (IMethodSymbol)context.Symbol;
-                if (!symbol.Name.EndsWith("Async", StringComparison.Ordinal))
-                {
-                    return;
-                }
-
-                if (symbol.HasAsyncSignature(treatAsyncVoidAsAsync: true))
-                {
-                    return;
-                }
-
-                if (!symbol.IsInAnalyzedSource(this.generatedHeaderCache, context.CancellationToken))
-                {
-                    return;
-                }
-
-                if (symbol.IsOverrideOrImplementation())
-                {
-                    return;
-                }
-
-                context.ReportDiagnostic(Diagnostic.Create(Descriptor, symbol.Locations[0], symbol.Name));
+                return;
             }
+
+            if (symbol.IsOverrideOrImplementation())
+            {
+                return;
+            }
+
+            context.ReportDiagnostic(Diagnostic.Create(Descriptor, symbol.Locations[0], symbol.Name));
         }
     }
 }

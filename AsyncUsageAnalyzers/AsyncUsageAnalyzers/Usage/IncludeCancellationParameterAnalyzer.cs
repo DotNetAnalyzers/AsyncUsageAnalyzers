@@ -4,7 +4,6 @@
 namespace AsyncUsageAnalyzers.Usage
 {
     using System;
-    using System.Collections.Concurrent;
     using System.Collections.Immutable;
     using System.Threading;
     using Helpers;
@@ -40,23 +39,23 @@ namespace AsyncUsageAnalyzers.Usage
         /// <inheritdoc/>
         public override void Initialize(AnalysisContext context)
         {
+            context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
+
             context.RegisterCompilationStartAction(CompilationStartAction);
         }
 
         private static void HandleCompilationStart(CompilationStartAnalysisContext context)
         {
-            Analyzer analyzer = new Analyzer(context.Compilation.GetOrCreateGeneratedDocumentCache(), context.Compilation);
+            Analyzer analyzer = new Analyzer(context.Compilation);
             context.RegisterSymbolAction(analyzer.HandleMethodDeclaration, SymbolKind.Method);
         }
 
         private sealed class Analyzer
         {
-            private readonly ConcurrentDictionary<SyntaxTree, bool> generatedHeaderCache;
-            private INamedTypeSymbol cancellationTokenType;
+            private readonly INamedTypeSymbol cancellationTokenType;
 
-            public Analyzer(ConcurrentDictionary<SyntaxTree, bool> generatedHeaderCache, Compilation compilation)
+            public Analyzer(Compilation compilation)
             {
-                this.generatedHeaderCache = generatedHeaderCache;
                 this.cancellationTokenType = compilation.GetTypeByMetadataName(typeof(CancellationToken).FullName);
             }
 
@@ -108,11 +107,6 @@ namespace AsyncUsageAnalyzers.Usage
                 case MethodKind.DeclareMethod:
                 default:
                     break;
-                }
-
-                if (!symbol.IsInAnalyzedSource(this.generatedHeaderCache, context.CancellationToken))
-                {
-                    return;
                 }
 
                 if (!symbol.HasAsyncSignature())

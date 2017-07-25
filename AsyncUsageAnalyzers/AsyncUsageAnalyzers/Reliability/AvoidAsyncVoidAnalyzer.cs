@@ -4,9 +4,7 @@
 namespace AsyncUsageAnalyzers.Reliability
 {
     using System;
-    using System.Collections.Concurrent;
     using System.Collections.Immutable;
-    using AsyncUsageAnalyzers.Helpers;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -39,8 +37,8 @@ namespace AsyncUsageAnalyzers.Reliability
                 SyntaxKind.ParenthesizedLambdaExpression,
                 SyntaxKind.SimpleLambdaExpression);
 
-        private static readonly Action<CompilationStartAnalysisContext> CompilationStartAction = HandleCompilationStart;
         private static readonly Action<SyntaxNodeAnalysisContext> AnonymousFunctionExpressionAction = HandleAnonymousFunctionExpression;
+        private static readonly Action<SymbolAnalysisContext> MethodDeclarationAction = HandleMethodDeclaration;
 
         /// <inheritdoc/>
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } =
@@ -49,14 +47,10 @@ namespace AsyncUsageAnalyzers.Reliability
         /// <inheritdoc/>
         public override void Initialize(AnalysisContext context)
         {
-            context.RegisterCompilationStartAction(CompilationStartAction);
-        }
+            context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 
-        private static void HandleCompilationStart(CompilationStartAnalysisContext context)
-        {
-            Analyzer analyzer = new Analyzer(context.Compilation.GetOrCreateGeneratedDocumentCache());
-            context.RegisterSymbolAction(analyzer.HandleMethodDeclaration, SymbolKind.Method);
-            context.RegisterSyntaxNodeActionHonorExclusions(AnonymousFunctionExpressionAction, AnonymousFunctionExpressionKinds);
+            context.RegisterSyntaxNodeAction(AnonymousFunctionExpressionAction, AnonymousFunctionExpressionKinds);
+            context.RegisterSymbolAction(MethodDeclarationAction, SymbolKind.Method);
         }
 
         private static void HandleAnonymousFunctionExpression(SyntaxNodeAnalysisContext context)
@@ -88,30 +82,15 @@ namespace AsyncUsageAnalyzers.Reliability
             context.ReportDiagnostic(Diagnostic.Create(Descriptor, node.AsyncKeyword.GetLocation(), "<anonymous>"));
         }
 
-        private sealed class Analyzer
+        private static void HandleMethodDeclaration(SymbolAnalysisContext context)
         {
-            private readonly ConcurrentDictionary<SyntaxTree, bool> generatedHeaderCache;
-
-            public Analyzer(ConcurrentDictionary<SyntaxTree, bool> generatedHeaderCache)
+            IMethodSymbol symbol = (IMethodSymbol)context.Symbol;
+            if (!symbol.IsAsync || !symbol.ReturnsVoid)
             {
-                this.generatedHeaderCache = generatedHeaderCache;
+                return;
             }
 
-            public void HandleMethodDeclaration(SymbolAnalysisContext context)
-            {
-                IMethodSymbol symbol = (IMethodSymbol)context.Symbol;
-                if (!symbol.IsAsync || !symbol.ReturnsVoid)
-                {
-                    return;
-                }
-
-                if (!symbol.IsInAnalyzedSource(this.generatedHeaderCache, context.CancellationToken))
-                {
-                    return;
-                }
-
-                context.ReportDiagnostic(Diagnostic.Create(Descriptor, symbol.Locations[0], symbol.Name));
-            }
+            context.ReportDiagnostic(Diagnostic.Create(Descriptor, symbol.Locations[0], symbol.Name));
         }
     }
 }
