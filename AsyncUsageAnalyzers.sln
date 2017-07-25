@@ -1,13 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.26711.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsyncUsageAnalyzers", "AsyncUsageAnalyzers\AsyncUsageAnalyzers\AsyncUsageAnalyzers.csproj", "{4E32037D-3EE0-419A-BC68-7D28FCD453A0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AsyncUsageAnalyzers", "AsyncUsageAnalyzers\AsyncUsageAnalyzers\AsyncUsageAnalyzers.csproj", "{4E32037D-3EE0-419A-BC68-7D28FCD453A0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsyncUsageAnalyzers.Test", "AsyncUsageAnalyzers\AsyncUsageAnalyzers.Test\AsyncUsageAnalyzers.Test.csproj", "{658C2A87-E2A9-494D-93D7-CB60EFE3D02B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AsyncUsageAnalyzers.Test", "AsyncUsageAnalyzers\AsyncUsageAnalyzers.Test\AsyncUsageAnalyzers.Test.csproj", "{658C2A87-E2A9-494D-93D7-CB60EFE3D02B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsyncUsageAnalyzers.Vsix", "AsyncUsageAnalyzers\AsyncUsageAnalyzers.Vsix\AsyncUsageAnalyzers.Vsix.csproj", "{8ABF883C-450A-4D0E-8D50-BF8A07C82C1B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AsyncUsageAnalyzers.Vsix", "AsyncUsageAnalyzers\AsyncUsageAnalyzers.Vsix\AsyncUsageAnalyzers.Vsix.csproj", "{8ABF883C-450A-4D0E-8D50-BF8A07C82C1B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{84B978A9-3463-4915-B8D2-89AD4C919C68}"
 	ProjectSection(SolutionItems) = preProject
@@ -26,7 +26,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{11D3EB88
 		build\version.ps1 = build\version.ps1
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsyncUsageAnalyzers.CodeFixes", "AsyncUsageAnalyzers\AsyncUsageAnalyzers.CodeFixes\AsyncUsageAnalyzers.CodeFixes.csproj", "{BA0CD420-1E79-4FBC-B023-09C03BCDFFAC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AsyncUsageAnalyzers.CodeFixes", "AsyncUsageAnalyzers\AsyncUsageAnalyzers.CodeFixes\AsyncUsageAnalyzers.CodeFixes.csproj", "{BA0CD420-1E79-4FBC-B023-09C03BCDFFAC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "documentation", "documentation", "{9E388950-B857-4C92-9429-676FE26BF115}"
 	ProjectSection(SolutionItems) = preProject
@@ -61,5 +61,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A8110A4D-9FB7-4C9B-9C89-78C536F8DB8D}
 	EndGlobalSection
 EndGlobal
