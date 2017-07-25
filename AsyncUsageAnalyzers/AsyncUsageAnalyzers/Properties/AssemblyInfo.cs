@@ -2,42 +2,15 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using System;
-using System.Reflection;
-using System.Resources;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-// General Information about an assembly is controlled through the following
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-[assembly: AssemblyTitle("AsyncUsageAnalyzers")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Tunnel Vision Laboratories, LLC")]
-[assembly: AssemblyProduct("AsyncUsageAnalyzers")]
-[assembly: AssemblyCopyright("Copyright © Sam Harwell 2015")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
 [assembly: CLSCompliant(false)]
-[assembly: NeutralResourcesLanguage("en-US")]
 
 // Setting ComVisible to false makes the types in this assembly not visible
 // to COM components.  If you need to access a type in this assembly from
 // COM, set the ComVisible attribute to true on that type.
 [assembly: ComVisible(false)]
-
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Build and Revision Numbers
-// by using the '*' as shown below:
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
-[assembly: AssemblyInformationalVersion("1.0.0-dev")]
 
 #if DEVELOPMENT_KEY
 [assembly: InternalsVisibleTo("AsyncUsageAnalyzers.CodeFixes, PublicKey=0024000004800000940000000602000000240000525341310004000001000100b149603f70e8d350f7f2145912b4ba208a4937af096b6677387d1980188af7da84d246943a3c7e68a3345dcf5f7b47bdb5d10c3c79bca5055910b8bf06d0ba406f9006a5a45e27781fd69f53397e57fb56e8086d139a3ac6a8bc65475b83e0d3a66240ff6b1361b047fa72c74f4b8140dba5e4bca3ab5a07b405d7da315da1c9")]

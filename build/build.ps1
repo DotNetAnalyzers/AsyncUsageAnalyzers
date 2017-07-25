@@ -29,14 +29,14 @@ If ($Version.Contains('-')) {
 	$KeyConfiguration = 'Final'
 }
 
-# download NuGet.exe if necessary
-$nuget = '..\.nuget\NuGet.exe'
+# download nuget.exe if necessary
+$nuget = '..\.nuget\nuget.exe'
 If (-not (Test-Path $nuget)) {
 	If (-not (Test-Path '..\.nuget')) {
 		mkdir '..\.nuget'
 	}
 
-	$nugetSource = 'http://nuget.org/nuget.exe'
+	$nugetSource = 'https://dist.nuget.org/win-x86-commandline/latest/nuget.exe'
 	Invoke-WebRequest $nugetSource -OutFile $nuget
 	If (-not $?) {
 		$host.ui.WriteErrorLine('Unable to download NuGet executable, aborting!')
@@ -74,7 +74,15 @@ if (-not $SkipKeyCheck) {
 	. .\keys.ps1
 
 	foreach ($pair in $Keys.GetEnumerator()) {
-		$assembly = Resolve-FullPath -Path "..\AsyncUsageAnalyzers\AsyncUsageAnalyzers\bin\$BuildConfig\AsyncUsageAnalyzers.dll"
+		$assembly = Resolve-FullPath -Path "..\AsyncUsageAnalyzers\AsyncUsageAnalyzers.CodeFixes\bin\$BuildConfig\$($pair.Key)\AsyncUsageAnalyzers.dll"
+		# Run the actual check in a separate process or the current process will keep the assembly file locked
+		powershell -Command ".\check-key.ps1 -Assembly '$assembly' -ExpectedKey '$($pair.Value)' -Build '$($pair.Key)'"
+		If (-not $?) {
+			$host.ui.WriteErrorLine('Failed to verify strong name key for build, aborting!')
+			exit $LASTEXITCODE
+		}
+
+		$assembly = Resolve-FullPath -Path "..\AsyncUsageAnalyzers\AsyncUsageAnalyzers.CodeFixes\bin\$BuildConfig\$($pair.Key)\AsyncUsageAnalyzers.CodeFixes.dll"
 		# Run the actual check in a separate process or the current process will keep the assembly file locked
 		powershell -Command ".\check-key.ps1 -Assembly '$assembly' -ExpectedKey '$($pair.Value)' -Build '$($pair.Key)'"
 		If (-not $?) {
@@ -88,5 +96,5 @@ if (-not (Test-Path 'nuget')) {
 	mkdir "nuget"
 }
 
-Copy-Item "..\AsyncUsageAnalyzers\AsyncUsageAnalyzers\bin\$BuildConfig\AsyncUsageAnalyzers.$Version.nupkg" 'nuget'
-Copy-Item "..\AsyncUsageAnalyzers\AsyncUsageAnalyzers\bin\$BuildConfig\AsyncUsageAnalyzers.$Version.symbols.nupkg" 'nuget'
+Copy-Item "..\AsyncUsageAnalyzers\AsyncUsageAnalyzers.CodeFixes\bin\$BuildConfig\AsyncUsageAnalyzers.$Version.nupkg" 'nuget'
+Copy-Item "..\AsyncUsageAnalyzers\AsyncUsageAnalyzers.CodeFixes\bin\$BuildConfig\AsyncUsageAnalyzers.$Version.symbols.nupkg" 'nuget'
