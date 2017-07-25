@@ -13,3 +13,6 @@ test_script:
 # preserve "packages" directory in the root of build folder but will reset it if packages.config is modified
 cache:
   - packages -> **\packages.config
+artifacts:
+- path: 'AsyncUsageAnalyzers\**\*.vsix'
+- path: 'AsyncUsageAnalyzers\**\*.nupkg'
