@@ -98,7 +98,7 @@ class ClassName
             DiagnosticResult[] expected =
             {
                 this.CSharpDiagnostic().WithLocation(12, 15),
-                this.CSharpDiagnostic().WithLocation(12, 22)
+                this.CSharpDiagnostic().WithLocation(12, 22),
             };
             await this.VerifyCSharpDiagnosticAsync(testCode, expected, CancellationToken.None).ConfigureAwait(false);
             await this.VerifyCSharpDiagnosticAsync(fixedCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
