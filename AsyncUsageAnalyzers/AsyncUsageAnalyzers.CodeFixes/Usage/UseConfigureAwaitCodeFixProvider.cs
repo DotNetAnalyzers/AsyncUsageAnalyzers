@@ -18,7 +18,7 @@ namespace AsyncUsageAnalyzers.Usage
     /// <summary>
     /// Implements a code fix for <see cref="UseConfigureAwaitCodeFixProvider"/>.
     /// </summary>
-    [ExportCodeFixProvider(LanguageNames.CSharp, LanguageNames.VisualBasic, Name = nameof(UseConfigureAwaitCodeFixProvider))]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(UseConfigureAwaitCodeFixProvider))]
     [Shared]
     internal class UseConfigureAwaitCodeFixProvider : CodeFixProvider
     {
