@@ -14,8 +14,10 @@ namespace AsyncUsageAnalyzers.Test.Usage
 
     public class UseConfigureAwaitUnitTests : CodeFixVerifier
     {
-        [Fact]
-        public async Task TestSimpleExpressionAsync()
+        [Theory]
+        [InlineData(0, "false")]
+        [InlineData(1, "true")]
+        public async Task TestSimpleExpressionAsync(int codeFixIndex, string configureAwaitArgument)
         {
             string testCode = @"
 using System.Threading.Tasks;
@@ -27,21 +29,21 @@ class ClassName
     }
 }
 ";
-            string fixedCode = @"
+            string fixedCode = $@"
 using System.Threading.Tasks;
 class ClassName
-{
+{{
     async Task MethodNameAsync()
-    {
-        await Task.Delay(1000).ConfigureAwait(false);
-    }
-}
+    {{
+        await Task.Delay(1000).ConfigureAwait({configureAwaitArgument});
+    }}
+}}
 ";
 
             DiagnosticResult expected = this.CSharpDiagnostic().WithLocation(7, 15);
             await this.VerifyCSharpDiagnosticAsync(testCode, expected, CancellationToken.None).ConfigureAwait(false);
             await this.VerifyCSharpDiagnosticAsync(fixedCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
-            await this.VerifyCSharpFixAsync(testCode, fixedCode, cancellationToken: CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpFixAsync(testCode, fixedCode, codeFixIndex: codeFixIndex, cancellationToken: CancellationToken.None).ConfigureAwait(false);
         }
 
         [Fact]
@@ -61,8 +63,10 @@ class ClassName
             await this.VerifyCSharpDiagnosticAsync(testCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
         }
 
-        [Fact]
-        public async Task TestNestedExpressionsAsync()
+        [Theory]
+        [InlineData(0, "false")]
+        [InlineData(1, "true")]
+        public async Task TestNestedExpressionsAsync(int codeFixIndex, string configureAwaitArgument)
         {
             string testCode = @"
 using System.Threading.Tasks;
@@ -79,20 +83,20 @@ class ClassName
     }
 }
 ";
-            string fixedCode = @"
+            string fixedCode = $@"
 using System.Threading.Tasks;
 class ClassName
-{
+{{
     async Task<Task> FirstMethodAsync()
-    {
+    {{
         return Task.FromResult(true);
-    }
+    }}
 
     async Task MethodNameAsync()
-    {
-        await (await FirstMethodAsync().ConfigureAwait(false)).ConfigureAwait(false);
-    }
-}
+    {{
+        await (await FirstMethodAsync().ConfigureAwait({configureAwaitArgument})).ConfigureAwait({configureAwaitArgument});
+    }}
+}}
 ";
 
             DiagnosticResult[] expected =
@@ -102,7 +106,7 @@ class ClassName
             };
             await this.VerifyCSharpDiagnosticAsync(testCode, expected, CancellationToken.None).ConfigureAwait(false);
             await this.VerifyCSharpDiagnosticAsync(fixedCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
-            await this.VerifyCSharpFixAsync(testCode, fixedCode, cancellationToken: CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpFixAsync(testCode, fixedCode, codeFixIndex: codeFixIndex, cancellationToken: CancellationToken.None).ConfigureAwait(false);
         }
 
         protected override IEnumerable<DiagnosticAnalyzer> GetCSharpDiagnosticAnalyzers()
