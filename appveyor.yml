@@ -10,7 +10,7 @@ build:
   project: AsyncUsageAnalyzers.sln
   verbosity: minimal
 test_script:
-- .\packages\OpenCover.4.6.247-rc\tools\OpenCover.Console.exe -register:user -target:"%xunit20%\xunit.console.x86.exe" -targetargs:"C:\projects\asyncusageanalyzers\AsyncUsageAnalyzers\AsyncUsageAnalyzers.Test\bin\Debug\AsyncUsageAnalyzers.Test.dll -noshadow -appveyor" -returntargetcode -filter:"+[AsyncUsage*]*" -excludebyattribute:*.ExcludeFromCodeCoverage* -hideskipped:All -output:.\AsyncUsageAnalyzers_coverage.xml
+- .\packages\OpenCover.4.6.519\tools\OpenCover.Console.exe -register:user -target:"%xunit20%\xunit.console.x86.exe" -targetargs:"C:\projects\asyncusageanalyzers\AsyncUsageAnalyzers\AsyncUsageAnalyzers.Test\bin\Debug\AsyncUsageAnalyzers.Test.dll -noshadow -appveyor" -returntargetcode -filter:"+[AsyncUsage*]*" -excludebyattribute:*.ExcludeFromCodeCoverage* -hideskipped:All -output:.\AsyncUsageAnalyzers_coverage.xml
 - .\packages\Codecov.1.0.1\tools\codecov.exe -f "AsyncUsageAnalyzers_coverage.xml"
 # preserve "packages" directory in the root of build folder but will reset it if packages.config is modified
 cache:
