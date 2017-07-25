@@ -216,7 +216,7 @@ class ClassName : InterfaceName
             DiagnosticResult[] expected =
             {
                 this.CSharpDiagnostic().WithArguments("Method").WithLocation(5, 10),
-                this.CSharpDiagnostic().WithArguments("Method").WithLocation(9, 10)
+                this.CSharpDiagnostic().WithArguments("Method").WithLocation(9, 10),
             };
 
             await this.VerifyCSharpDiagnosticAsync(testCode, expected, CancellationToken.None).ConfigureAwait(false);
