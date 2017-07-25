@@ -32,7 +32,6 @@ namespace AsyncUsageAnalyzers.Usage
         private static readonly DiagnosticDescriptor Descriptor =
             new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Hidden, AnalyzerConstants.EnabledByDefault, Description, HelpLink);
 
-        private static readonly Action<CompilationStartAnalysisContext> CompilationStartAction = HandleCompilationStart;
         private static readonly Action<SyntaxNodeAnalysisContext> AwaitExpressionAction = HandleAwaitExpression;
 
         /// <inheritdoc/>
@@ -42,12 +41,10 @@ namespace AsyncUsageAnalyzers.Usage
         /// <inheritdoc/>
         public override void Initialize(AnalysisContext context)
         {
-            context.RegisterCompilationStartAction(CompilationStartAction);
-        }
+            context.EnableConcurrentExecution();
+            context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 
-        private static void HandleCompilationStart(CompilationStartAnalysisContext context)
-        {
-            context.RegisterSyntaxNodeActionHonorExclusions(AwaitExpressionAction, SyntaxKind.AwaitExpression);
+            context.RegisterSyntaxNodeAction(AwaitExpressionAction, SyntaxKind.AwaitExpression);
         }
 
         private static void HandleAwaitExpression(SyntaxNodeAnalysisContext context)
