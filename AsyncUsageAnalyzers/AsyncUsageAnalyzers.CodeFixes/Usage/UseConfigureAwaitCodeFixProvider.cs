@@ -22,6 +22,9 @@ namespace AsyncUsageAnalyzers.Usage
     [Shared]
     internal class UseConfigureAwaitCodeFixProvider : CodeFixProvider
     {
+        private const string UseConfigureAwaitFalseEquivalenceId = nameof(UseConfigureAwaitCodeFixProvider) + "_False";
+        private const string UseConfigureAwaitTrueEquivalenceId = nameof(UseConfigureAwaitCodeFixProvider) + "_True";
+
         private static readonly ImmutableArray<string> FixableDiagnostics =
             ImmutableArray.Create(UseConfigureAwaitAnalyzer.DiagnosticId);
 
@@ -47,15 +50,21 @@ namespace AsyncUsageAnalyzers.Usage
                 context.RegisterCodeFix(
                     CodeAction.Create(
                         "Use ConfigureAwait(false)",
-                        cancellationToken => GetTransformedDocumentAsync(context.Document, diagnostic, cancellationToken),
-                        nameof(UseConfigureAwaitCodeFixProvider) + "_False"),
+                        cancellationToken => GetTransformedDocumentAsync(context.Document, diagnostic, SyntaxKind.FalseLiteralExpression, cancellationToken),
+                        UseConfigureAwaitFalseEquivalenceId),
+                    diagnostic);
+                context.RegisterCodeFix(
+                    CodeAction.Create(
+                        "Use ConfigureAwait(true)",
+                        cancellationToken => GetTransformedDocumentAsync(context.Document, diagnostic, SyntaxKind.TrueLiteralExpression, cancellationToken),
+                        UseConfigureAwaitTrueEquivalenceId),
                     diagnostic);
             }
 
             return Task.FromResult(true);
         }
 
-        private static async Task<Document> GetTransformedDocumentAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
+        private static async Task<Document> GetTransformedDocumentAsync(Document document, Diagnostic diagnostic, SyntaxKind literalKind, CancellationToken cancellationToken)
         {
             SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             ExpressionSyntax expression = (ExpressionSyntax)root.FindNode(diagnostic.Location.SourceSpan);
@@ -67,7 +76,7 @@ namespace AsyncUsageAnalyzers.Usage
                 SyntaxFactory.ArgumentList(
                     SyntaxFactory.SingletonSeparatedList(
                         SyntaxFactory.Argument(
-                            SyntaxFactory.LiteralExpression(SyntaxKind.FalseLiteralExpression)))))
+                            SyntaxFactory.LiteralExpression(literalKind)))))
                 .WithAdditionalAnnotations(Formatter.Annotation);
 
             SyntaxNode newRoot = root.ReplaceNode(expression, newExpression);
