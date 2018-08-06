@@ -411,6 +411,51 @@ class ClassName
             await this.VerifyCSharpDiagnosticAsync(testCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
         }
 
+        [Theory]
+        [InlineData("static Task Main()")]
+        [InlineData("static Task<int> Main()")]
+        [InlineData("static Task Main(string[] args)")]
+        [InlineData("static Task Main(params string[] args)")]
+        [InlineData("static Task<int> Main(string[] args)")]
+        [InlineData("static Task<int> Main(params string[] args)")]
+        [InlineData("public static Task Main(string[] args)")]
+        [InlineData("public static Task<int> Main(params string[] args)")]
+        public async Task TestAsyncMainAsync(string signature)
+        {
+            string testCode = $@"
+using System.Threading.Tasks;
+class ClassName
+{{
+    {signature} {{ throw null; }}
+}}
+";
+
+            await this.VerifyCSharpDiagnosticAsync(testCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+        }
+
+        [Theory]
+        [InlineData("       Task       Main()")]
+        [InlineData("static Task<uint> Main()")]
+        [InlineData("static Task       Main(string[] args, CancellationToken cancellationToken)")]
+        [InlineData("static Task       Main(string args)")]
+        public async Task TestAsyncMainNonMatchingSignatureAsync(string signature)
+        {
+            string testCode = $@"
+using System.Threading;
+using System.Threading.Tasks;
+class ClassName
+{{
+    {signature} {{ throw null; }}
+}}
+";
+            string fixedCode = testCode.Replace("Main", "MainAsync");
+
+            DiagnosticResult expected = this.CSharpDiagnostic().WithArguments("Main").WithLocation(6, 23);
+            await this.VerifyCSharpDiagnosticAsync(testCode, expected, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpDiagnosticAsync(fixedCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpFixAsync(testCode, fixedCode, cancellationToken: CancellationToken.None).ConfigureAwait(false);
+        }
+
         protected override IEnumerable<DiagnosticAnalyzer> GetCSharpDiagnosticAnalyzers()
         {
             yield return new UseAsyncSuffixAnalyzer();

@@ -67,6 +67,11 @@ namespace AsyncUsageAnalyzers.Naming
                 return;
             }
 
+            if (symbol.IsAsyncMain())
+            {
+                return;
+            }
+
             context.ReportDiagnostic(Diagnostic.Create(Descriptor, symbol.Locations[0], symbol.Name));
         }
     }
