@@ -122,6 +122,16 @@ namespace TestHelper
                 .AddMetadataReference(projectId, MetadataReferences.CSharpSymbolsReference)
                 .AddMetadataReference(projectId, MetadataReferences.CodeAnalysisReference);
 
+            if (MetadataReferences.SystemThreadingTasksReference != null)
+            {
+                solution = solution.AddMetadataReference(projectId, MetadataReferences.SystemThreadingTasksReference);
+            }
+
+            if (MetadataReferences.SystemThreadingTasksExtensionsReference != null)
+            {
+                solution = solution.AddMetadataReference(projectId, MetadataReferences.SystemThreadingTasksExtensionsReference);
+            }
+
             var settings = this.GetSettings();
             if (!string.IsNullOrEmpty(settings))
             {
