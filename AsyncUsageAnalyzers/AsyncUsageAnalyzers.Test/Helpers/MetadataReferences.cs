@@ -3,8 +3,11 @@
 
 namespace AsyncUsageAnalyzers.Test.Helpers
 {
+    using System;
     using System.Collections.Immutable;
     using System.Linq;
+    using System.Reflection;
+    using System.Threading.Tasks;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
 
@@ -18,5 +21,25 @@ namespace AsyncUsageAnalyzers.Test.Helpers
         internal static readonly MetadataReference SystemCoreReference = MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location);
         internal static readonly MetadataReference CSharpSymbolsReference = MetadataReference.CreateFromFile(typeof(CSharpCompilation).Assembly.Location);
         internal static readonly MetadataReference CodeAnalysisReference = MetadataReference.CreateFromFile(typeof(Compilation).Assembly.Location);
+
+        internal static readonly MetadataReference SystemThreadingTasksReference;
+        internal static readonly MetadataReference SystemThreadingTasksExtensionsReference;
+
+        static MetadataReferences()
+        {
+            if (typeof(ValueTask<>).Assembly == typeof(string).Assembly)
+            {
+                // mscorlib contains ValueTask<TResult>, so no need to add a separate reference
+                SystemThreadingTasksReference = null;
+                SystemThreadingTasksExtensionsReference = null;
+            }
+            else
+            {
+                Assembly systemThreadingTasks = AppDomain.CurrentDomain.GetAssemblies().Single(x => x.GetName().Name == "System.Threading.Tasks");
+                SystemThreadingTasksReference = MetadataReference.CreateFromFile(systemThreadingTasks.Location);
+
+                SystemThreadingTasksExtensionsReference = MetadataReference.CreateFromFile(typeof(ValueTask<>).Assembly.Location);
+            }
+        }
     }
 }

@@ -25,7 +25,8 @@ namespace AsyncUsageAnalyzers.Helpers
             if (!symbol.IsAsync)
             {
                 // This check conveniently covers Task and Task<T> by ignoring the `1 in Task<T>.
-                if (!string.Equals(nameof(Task), symbol.ReturnType?.Name, StringComparison.Ordinal))
+                if (!string.Equals(nameof(Task), symbol.ReturnType?.Name, StringComparison.Ordinal)
+                    && !string.Equals("ValueTask", symbol.ReturnType?.Name, StringComparison.Ordinal))
                 {
                     return false;
                 }
