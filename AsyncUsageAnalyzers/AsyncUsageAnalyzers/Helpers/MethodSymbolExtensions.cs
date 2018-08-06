@@ -9,7 +9,7 @@ namespace AsyncUsageAnalyzers.Helpers
 
     internal static class MethodSymbolExtensions
     {
-        public static bool HasAsyncSignature(this IMethodSymbol symbol, bool treatAsyncVoidAsAsync = false)
+        public static bool HasAsyncSignature(this IMethodSymbol symbol, bool treatAsyncVoidAsAsync = false, bool treatValueTaskAsAsync = true)
         {
             // void-returning methods are not asynchronous according to their signature, even if they use `async`
             if (symbol.ReturnsVoid)
@@ -26,7 +26,7 @@ namespace AsyncUsageAnalyzers.Helpers
             {
                 // This check conveniently covers Task and Task<T> by ignoring the `1 in Task<T>.
                 if (!string.Equals(nameof(Task), symbol.ReturnType?.Name, StringComparison.Ordinal)
-                    && !string.Equals("ValueTask", symbol.ReturnType?.Name, StringComparison.Ordinal))
+                    && !(treatValueTaskAsAsync && string.Equals("ValueTask", symbol.ReturnType?.Name, StringComparison.Ordinal)))
                 {
                     return false;
                 }
@@ -91,6 +91,53 @@ namespace AsyncUsageAnalyzers.Helpers
             }
 
             return false;
+        }
+
+        public static bool IsAsyncMain(this IMethodSymbol symbol)
+        {
+            // The following signatures are allowed:
+            //
+            // static Task Main()
+            // static Task<int> Main()
+            // static Task Main(string[])
+            // static Task<int> Main(string[])
+            if (!symbol.IsStatic)
+            {
+                return false;
+            }
+
+            if (!string.Equals(symbol.Name, "Main", StringComparison.Ordinal))
+            {
+                return false;
+            }
+
+            if (!symbol.HasAsyncSignature(treatAsyncVoidAsAsync: false, treatValueTaskAsAsync: false))
+            {
+                return false;
+            }
+
+            var returnType = (INamedTypeSymbol)symbol.ReturnType;
+            if (returnType.IsGenericType)
+            {
+                if (returnType.TypeArguments.Length != 1
+                    || returnType.TypeArguments[0].SpecialType != SpecialType.System_Int32)
+                {
+                    return false;
+                }
+            }
+
+            switch (symbol.Parameters.Length)
+            {
+            case 0:
+                return true;
+
+            case 1:
+                return symbol.Parameters[0].Type is IArrayTypeSymbol arrayType
+                    && arrayType.ElementType.SpecialType == SpecialType.System_String;
+
+            default:
+                return false;
+            }
         }
     }
 }
