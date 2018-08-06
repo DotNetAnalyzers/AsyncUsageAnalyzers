@@ -347,6 +347,32 @@ class ClassName
         }
 
         [Fact]
+        public async Task TestReturnValueTaskAsync()
+        {
+            string testCode = @"
+using System.Threading.Tasks;
+class ClassName
+{
+    ValueTask FirstMethod() { return default(ValueTask); }
+    ValueTask SecondMethodAsync() { return default(ValueTask); }
+}
+";
+            string fixedCode = @"
+using System.Threading.Tasks;
+class ClassName
+{
+    ValueTask FirstMethodAsync() { return default(ValueTask); }
+    ValueTask SecondMethodAsync() { return default(ValueTask); }
+}
+";
+
+            DiagnosticResult expected = this.CSharpDiagnostic().WithArguments("FirstMethod").WithLocation(5, 15);
+            await this.VerifyCSharpDiagnosticAsync(testCode, expected, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpDiagnosticAsync(fixedCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpFixAsync(testCode, fixedCode, cancellationToken: CancellationToken.None).ConfigureAwait(false);
+        }
+
+        [Fact]
         public async Task TestReturnGenericValueTaskAsync()
         {
             string testCode = @"

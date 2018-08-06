@@ -347,6 +347,21 @@ class ClassName
 using System.Threading.Tasks;
 class ClassName
 {
+    ValueTask FirstMethod() { return default(ValueTask); }
+    ValueTask SecondMethodAsync() { return default(ValueTask); }
+}
+";
+
+            await this.VerifyCSharpDiagnosticAsync(testCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task TestReturnGenericValueTaskAsync()
+        {
+            string testCode = @"
+using System.Threading.Tasks;
+class ClassName
+{
     ValueTask<int> FirstMethod() { return new ValueTask<int>(3); }
     ValueTask<int> SecondMethodAsync() { return new ValueTask<int>(3); }
 }
